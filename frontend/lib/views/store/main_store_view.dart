@@ -25,6 +25,54 @@ class MainStoreView extends StatelessWidget {
             ),
           ],
         ),
+        drawer: Drawer(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topRight: Radius.zero,
+              bottomRight: Radius.zero,
+            ),
+          ),
+          width: MediaQuery.of(context).size.width * 0.45,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.zero,
+                ),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.home_outlined),
+                title: const Text('Home'),
+                onTap: () {
+                  //TODO go to home screen
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.favorite_border_rounded),
+                title: const Text('Favorites'),
+                onTap: () {
+                  //TODO go to favorites
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings_outlined),
+                title: const Text('Settings'),
+                onTap: () {
+                  //TODO go to settings
+                },
+              ),
+            ],
+          ),
+        ),
         body: const Placeholder());
   }
 }
