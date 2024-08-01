@@ -5,9 +5,16 @@ import 'package:frontend/views/store/main_store_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     title: 'E-Commerce',
-    home: HomePage(),
+    theme: ThemeData(
+      appBarTheme: const AppBarTheme(
+        iconTheme: IconThemeData(
+          size: 22.0,
+        ),
+      ),
+    ),
+    home: const HomePage(),
     debugShowCheckedModeBanner: false,
   ));
 }
