@@ -9,6 +9,11 @@
 .history
 .svn/
 migrate_working_dir/
+Thumbs.db
+ehthumbs.db
+.Spotlight-V100
+.Trashes
+*.~lock.*
 
 # IntelliJ related
 *.iml
@@ -20,6 +25,8 @@ migrate_working_dir/
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
+*.sublime-workspace
+*.sublime-project
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -42,5 +49,16 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-/assets/images/
+# Node.js related
+node_modules/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Coverage reports
+coverage/
+
 
