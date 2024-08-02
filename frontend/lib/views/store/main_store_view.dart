@@ -1,10 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/custom_search_delegate.dart';
+import 'package:frontend/services/store/product.dart';
+
+final List<Product> mockProducts = [
+  Product(
+    title: 'Fender Stratocaster',
+    description: 'Classic electric guitar with a timeless sound.',
+    unitPrice: 1199.99,
+    images: [
+      'assets/fender-stratocaster/fender-stratocaster-1.jpg',
+      'assets/fender-stratocaster/fender-stratocaster-2.jpg',
+      'assets/fender-stratocaster/fender-stratocaster-3.jpg',
+      'assets/fender-stratocaster/fender-stratocaster-4.jpg',
+      'assets/fender-stratocaster/fender-stratocaster-5.jpg',
+    ],
+    sku: 'FEND-STRAT',
+    slug: 'fender-stratocaster',
+    inventory: 15,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: true,
+  ),
+  Product(
+    title: 'Gibson Les Paul',
+    description: 'Iconic electric guitar known for its rich tone.',
+    unitPrice: 2499.99,
+    images: [
+      'assets/gibson-les-paul/gibson-les-paul-1.jpg',
+      'assets/gibson-les-paul/gibson-les-paul-2.jpg',
+      'assets/gibson-les-paul/gibson-les-paul-3.jpg',
+      'assets/gibson-les-paul/gibson-les-paul-4.jpg',
+    ],
+    sku: 'GIBS-LESPAUL',
+    slug: 'gibson-les-paul',
+    inventory: 10,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: false,
+  ),
+];
 
 class MainStoreView extends StatelessWidget {
-  final List<String> items = ['Apple', 'Banana', 'Orange', 'Pineapple'];
-
-  MainStoreView({super.key});
+  const MainStoreView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +55,7 @@ class MainStoreView extends StatelessWidget {
                 onPressed: () {
                   showSearch(
                     context: context,
-                    delegate: CustomSearchDelegate(items),
+                    delegate: CustomSearchDelegate(mockProducts),
                   );
                 },
               ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/store/product.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
-  final List<String> data;
+  final List<Product> data;
 
   CustomSearchDelegate(this.data);
 
@@ -56,13 +57,13 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     final results = data
-        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
         .toList();
     return ListView.builder(
       itemCount: results.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(results[index]),
+          title: Text(results[index].title),
         );
       },
     );
@@ -71,7 +72,7 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     final suggestions = data
-        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return Padding(
@@ -87,10 +88,10 @@ class CustomSearchDelegate extends SearchDelegate {
                 left: 22.0,
                 right: 22.0,
               ),
-              child: Text(suggestions[index]),
+              child: Text(suggestions[index].title),
             ),
             onTap: () {
-              query = suggestions[index];
+              query = suggestions[index].title;
               showResults(context);
             },
           );
