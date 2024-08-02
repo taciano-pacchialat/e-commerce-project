@@ -64,7 +64,6 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    #TODO mock product gibson les paul
     - assets/images/gibson-les-paul/gibson-les-paul-1.jpg
     - assets/images/gibson-les-paul/gibson-les-paul-2.jpg
     - assets/images/gibson-les-paul/gibson-les-paul-3.jpg
@@ -74,6 +73,13 @@ flutter:
     - assets/images/fender-stratocaster/fender-stratocaster-3.jpg
     - assets/images/fender-stratocaster/fender-stratocaster-4.jpg
     - assets/images/fender-stratocaster/fender-stratocaster-5.jpg
+    - assets/images/apollo-interface/apollo-interface-1.jpeg
+    - assets/images/fender-telecaster/fender-telecaster-1.jpeg
+    - assets/images/gibson-sg/gibson-sg-1.jpeg
+    - assets/images/marshall-jcm800/marshall-jcm800-1.jpeg
+    - assets/images/marshall-jvm410h/marshall-jvm410h-1.jpeg
+    - assets/images/mic-shure/mic-shure-1.jpeg
+    - assets/images/orange-rockerverb50-mkii/orange-rockerverb50-mkii-1.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
