@@ -2,28 +2,25 @@
 
 import 'package:flutter/material.dart';
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class RegisterEmailView extends StatefulWidget {
+  const RegisterEmailView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<RegisterEmailView> createState() => _RegisterEmailViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _RegisterEmailViewState extends State<RegisterEmailView> {
   late final TextEditingController _email;
-  late final TextEditingController _password;
 
   @override
   void initState() {
     _email = TextEditingController();
-    _password = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     _email.dispose();
-    _password.dispose();
     super.dispose();
   }
 
@@ -36,7 +33,7 @@ class _RegisterViewState extends State<RegisterView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Enter your email and password to create an account!'),
+            const Text('Enter your email to create an account!'),
             TextField(
               controller: _email,
               enableSuggestions: false,
@@ -48,13 +45,6 @@ class _RegisterViewState extends State<RegisterView> {
                 hintText: 'email',
               ),
             ),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(hintText: 'password'),
-            ),
             Center(
               child: Column(
                 children: [
@@ -62,7 +52,7 @@ class _RegisterViewState extends State<RegisterView> {
                     onPressed: () async {
                       //TODO implement
                     },
-                    child: const Text("Register"),
+                    child: const Text("Next"),
                   ),
                   TextButton(
                       onPressed: () {

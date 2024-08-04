@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/store/product.dart';
-import 'package:frontend/views/auth/login_view.dart';
-import 'package:frontend/views/auth/register_view.dart';
+import 'package:frontend/views/register/register_password_view.dart';
+import 'package:frontend/views/register/register_email_view.dart';
+import 'package:frontend/views/login/login_email_view.dart';
+import 'package:frontend/views/login/login_password_view.dart';
 import 'package:frontend/views/store/main_store_view.dart';
 import 'package:frontend/views/store/product_detail_view.dart';
 
@@ -57,10 +59,23 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginView()),
+                    MaterialPageRoute(
+                      builder: (context) => const LoginEmailView(),
+                    ),
                   );
                 },
-                child: const Text('Login view'),
+                child: const Text('Login email view'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPasswordView(),
+                    ),
+                  );
+                },
+                child: const Text('Login password view'),
               ),
               const SizedBox(
                 height: 20,
@@ -70,10 +85,22 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const RegisterView()),
+                      builder: (context) => const RegisterEmailView(),
+                    ),
                   );
                 },
-                child: const Text('Register  view'),
+                child: const Text('Register email view'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterPasswordView(),
+                    ),
+                  );
+                },
+                child: const Text('Register password view'),
               ),
               const SizedBox(
                 height: 20,

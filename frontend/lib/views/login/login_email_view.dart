@@ -2,28 +2,25 @@
 
 import 'package:flutter/material.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+class LoginEmailView extends StatefulWidget {
+  const LoginEmailView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<LoginEmailView> createState() => _LoginEmailViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginEmailViewState extends State<LoginEmailView> {
   late final TextEditingController _email;
-  late final TextEditingController _password;
 
   @override
   void initState() {
     _email = TextEditingController();
-    _password = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     _email.dispose();
-    _password.dispose();
     super.dispose();
   }
 
@@ -35,11 +32,10 @@ class _LoginViewState extends State<LoginView> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const Text(
-                'Please log in to your account in order to interact with and create notes!'),
+            const Text('Please enter your e-mail!'),
             TextField(
               controller: _email,
-              enableSuggestions: false,
+              enableSuggestions: true,
               autocorrect: false,
               autofillHints: const [AutofillHints.email],
               keyboardType: TextInputType.emailAddress,
@@ -47,24 +43,12 @@ class _LoginViewState extends State<LoginView> {
                 hintText: 'email',
               ),
             ),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(hintText: 'password'),
-            ),
             TextButton(
               onPressed: () async {
                 //TODO implement
               },
               child: const Text("Login"),
             ),
-            TextButton(
-                onPressed: () {
-                  //TODO implement
-                },
-                child: const Text('Forgot your password? Tap here!')),
             TextButton(
                 onPressed: () {
                   //TODO implement
