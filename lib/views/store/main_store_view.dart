@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/widgets/custom_drawer.dart';
 import 'package:frontend/widgets/custom_search_delegate.dart';
 import 'package:frontend/services/store/product.dart';
 import 'package:frontend/widgets/product_card.dart';
@@ -130,8 +131,24 @@ class MainStoreView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double titleFontSize = screenHeight * 0.037;
+    double drawerItemFontSize = screenHeight * 0.022;
+
+    final List<String> drawerItems = ['Home', 'Categories', 'Help & Support'];
+
     return Scaffold(
       appBar: AppBar(
+        title: Center(
+          child: Text(
+            'Charly Store',
+            style: TextStyle(
+              fontSize: titleFontSize,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -147,53 +164,12 @@ class MainStoreView extends StatelessWidget {
           ),
         ],
       ),
-      drawer: Drawer(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topRight: Radius.zero,
-            bottomRight: Radius.zero,
-          ),
-        ),
-        width: MediaQuery.of(context).size.width * 0.45,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.zero,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home_outlined),
-              title: const Text('Home'),
-              onTap: () {
-                //TODO go to home screen
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.favorite_border_rounded),
-              title: const Text('Favorites'),
-              onTap: () {
-                //TODO go to favorites
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings_outlined),
-              title: const Text('Settings'),
-              onTap: () {
-                //TODO go to settings
-              },
-            ),
-          ],
-        ),
+      drawer: CustomDrawer(
+        screenWidth: screenWidth,
+        screenHeight: screenHeight,
+        titleFontSize: titleFontSize,
+        drawerItemFontSize: drawerItemFontSize,
+        drawerItems: drawerItems,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
