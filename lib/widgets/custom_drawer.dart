@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/widgets/drawer_list_tile.dart';
 
 class CustomDrawer extends StatelessWidget {
-  final double screenWidth;
-  final double screenHeight;
-  final double titleFontSize;
-  final double drawerItemFontSize;
   final List<String> drawerItems;
 
   const CustomDrawer({
     super.key,
-    required this.screenWidth,
-    required this.screenHeight,
-    required this.titleFontSize,
-    required this.drawerItemFontSize,
     required this.drawerItems,
   });
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Drawer(
+      backgroundColor: AppColors.primaryCream,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.zero,
@@ -29,31 +25,31 @@ class CustomDrawer extends StatelessWidget {
       width: screenWidth * 0.7,
       child: ListView.separated(
         padding: EdgeInsets.zero,
-        itemCount: drawerItems.length + 1, // +1 for the header
+        itemCount: drawerItems.length + 2, // +1 for the header & box
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.05,
-                top: screenHeight * 0.02,
-                bottom: screenHeight * 0.02,
+            return Container(
+              color: AppColors.primaryBurgundy,
+              padding: const EdgeInsets.only(
+                left: 18.0,
+                top: 8.0,
+                bottom: 10.0,
               ),
-              child: Text(
+              child: const Text(
                 'Charly Store',
                 style: TextStyle(
-                  fontSize: titleFontSize,
-                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryCream,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             );
+          } else if (index == 1) {
+            return const SizedBox(height: 22.0);
           } else {
-            final title = drawerItems[index - 1];
+            final title = drawerItems[index - 2];
             return DrawerListTile(
               title: title,
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
-              fontSize: drawerItemFontSize,
-              fontWeight: FontWeight.w100,
               onTap: () {
                 // TODO: handle navigation based on the title
                 if (title == 'Home') {
@@ -68,11 +64,13 @@ class CustomDrawer extends StatelessWidget {
           }
         },
         separatorBuilder: (BuildContext context, int index) {
-          return index == 0
+          return [0, 1].contains(index)
               ? const SizedBox.shrink()
               : Divider(
+                  height: 1.0,
                   indent: screenWidth * 0.08,
                   endIndent: screenWidth * 0.08,
+                  color: AppColors.secondaryGold,
                 );
         },
       ),

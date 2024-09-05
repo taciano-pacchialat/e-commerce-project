@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 
 class DrawerListTile extends StatelessWidget {
   final String title;
-  final double screenWidth;
-  final double screenHeight;
-  final double fontSize;
-  final FontWeight fontWeight;
   final VoidCallback onTap;
 
   const DrawerListTile({
     super.key,
     required this.title,
-    required this.screenWidth,
-    required this.screenHeight,
-    required this.fontSize,
-    required this.fontWeight,
     required this.onTap,
   });
 
@@ -22,16 +15,17 @@ class DrawerListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Padding(
-        padding: EdgeInsets.only(
-          left: screenWidth * 0.07,
-          top: screenHeight * 0.01,
-          bottom: screenHeight * 0.01,
+        padding: const EdgeInsets.only(
+          left: 28.0,
+          top: 8.0,
+          bottom: 8.0,
         ),
         child: Text(
           title,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: fontWeight,
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w100,
+            color: AppColors.primaryBurgundy,
           ),
         ),
       ),
