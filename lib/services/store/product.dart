@@ -1,6 +1,7 @@
 class Product {
   String title;
   String description;
+  String category;
   double unitPrice;
   List<String> images;
   String sku;
@@ -13,6 +14,7 @@ class Product {
   Product({
     required this.title,
     required this.description,
+    required this.category,
     required this.unitPrice,
     required this.images,
     required this.sku,

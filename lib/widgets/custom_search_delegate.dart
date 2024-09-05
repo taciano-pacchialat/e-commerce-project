@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/services/store/product.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
@@ -6,20 +7,21 @@ class CustomSearchDelegate extends SearchDelegate {
 
   CustomSearchDelegate(this.data);
 
+  //TODO change the font weight of the search prompt
+
   @override
   ThemeData appBarTheme(BuildContext context) {
     return ThemeData(
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 10.0,
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(color: Colors.black),
-          border: InputBorder.none,
-        ),
-        textTheme: const TextTheme(
-          headlineMedium: TextStyle(color: Colors.black, fontSize: 18),
-        ));
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primaryBurgundy,
+        elevation: 10.0,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.primaryCream),
+      inputDecorationTheme: const InputDecorationTheme(
+        hintStyle: TextStyle(color: Color.fromARGB(255, 131, 131, 131)),
+        border: InputBorder.none,
+      ),
+    );
   }
 
   @override
@@ -29,6 +31,7 @@ class CustomSearchDelegate extends SearchDelegate {
         padding: const EdgeInsets.all(8.0),
         child: IconButton(
           icon: const Icon(Icons.clear),
+          color: AppColors.primaryCream,
           onPressed: () {
             if (query.isEmpty) {
               close(context, null);
@@ -46,13 +49,23 @@ class CustomSearchDelegate extends SearchDelegate {
     return IconButton(
       icon: const IconTheme(
         data: IconThemeData(size: 22.0),
-        child: Icon(Icons.arrow_back),
+        child: Icon(
+          Icons.arrow_back,
+          color: AppColors.primaryCream,
+        ),
       ),
       onPressed: () {
         close(context, null);
       },
     );
   }
+
+  @override
+  TextStyle? get searchFieldStyle => const TextStyle(
+        color: AppColors.primaryCream,
+        fontSize: 18,
+        fontWeight: FontWeight.w100,
+      );
 
   @override
   Widget buildResults(BuildContext context) {
@@ -62,8 +75,48 @@ class CustomSearchDelegate extends SearchDelegate {
     return ListView.builder(
       itemCount: results.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(results[index].title),
+        final product = results[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Card(
+            color: const Color(
+                0xFFF5F5DC), // Background color similar to the image
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Color(0xFFC9A32C)), // Border color
+              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+            ),
+            child: ListTile(
+              leading: Image.network(
+                product.images[0],
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
+              ),
+              title: Text(
+                product.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5C1A1B), // Text color
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(product.category), // Displaying category (e.g., Guitars)
+                  Text(
+                    '\$${product.unitPrice}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green, // Price color
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
@@ -76,24 +129,58 @@ class CustomSearchDelegate extends SearchDelegate {
         .toList();
 
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 30.0,
-      ),
+      padding: const EdgeInsets.only(top: 20.0),
       child: ListView.builder(
         itemCount: suggestions.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Padding(
-              padding: const EdgeInsets.only(
-                left: 22.0,
-                right: 22.0,
+          final product = suggestions[index];
+          return Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+            child: Card(
+              color: const Color(0xFFF5F5DC), // Background color
+              shape: RoundedRectangleBorder(
+                side:
+                    const BorderSide(color: Color(0xFFC9A32C)), // Border color
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Text(suggestions[index].title),
+              child: ListTile(
+                leading: Image.network(
+                  product.images[0],
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+                title: Text(
+                  product.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5C1A1B),
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.category,
+                    ), // Displaying category (e.g., Guitars)
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  query = suggestions[index].title;
+                  showResults(context);
+                },
+              ),
             ),
-            onTap: () {
-              query = suggestions[index].title;
-              showResults(context);
-            },
           );
         },
       ),
