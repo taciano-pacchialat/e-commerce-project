@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/services/bloc/navigation_bloc.dart';
+import 'package:frontend/services/bloc/navigation_events.dart';
 import 'package:frontend/widgets/drawer_list_tile.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -54,10 +57,16 @@ class CustomDrawer extends StatelessWidget {
                 // TODO: handle navigation based on the title
                 if (title == 'Home') {
                   // Navigate to home screen
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHome());
                 } else if (title == 'Categories') {
                   // Navigate to categories
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToCategories());
                 } else if (title == 'Help & Support') {
                   // Navigate to help & support
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHelpSupport());
                 }
               },
             );

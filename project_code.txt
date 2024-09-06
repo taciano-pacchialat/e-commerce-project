@@ -1,7 +1,84 @@
+===== lib/services/bloc/navigation_states.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationState extends Equatable {
+  const NavigationState();
+
+  @override
+  List<Object> get props => [];
+}
+
+class HomeState extends NavigationState {}
+
+class CategoriesState extends NavigationState {}
+
+class HelpSupportState extends NavigationState {}
+
+class ProductDetailState extends NavigationState {
+  final String productId;
+
+  const ProductDetailState(this.productId);
+
+  @override
+  List<Object> get props => [productId];
+}
+
+
+
+===== lib/services/bloc/navigation_events.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationEvent extends Equatable {
+  const NavigationEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class NavigateToHome extends NavigationEvent {}
+
+class NavigateToCategories extends NavigationEvent {}
+
+class NavigateToHelpSupport extends NavigationEvent {}
+
+class NavigateToProductDetail extends NavigationEvent {
+  final String productId;
+
+  const NavigateToProductDetail(this.productId);
+
+  @override
+  List<Object> get props => [productId];
+}
+
+
+
+===== lib/services/bloc/navigation_bloc.dart =====
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'navigation_events.dart';
+import 'navigation_states.dart';
+
+class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
+  NavigationBloc() : super(HomeState());
+
+  Stream<NavigationState> mapEventToState(NavigationEvent event) async* {
+	  if (event is NavigateToHome) {
+	    yield HomeState();
+	  } else if (event is NavigateToCategories) {
+	    yield CategoriesState();
+	  } else if (event is NavigateToHelpSupport) {
+	    yield HelpSupportState();
+	  } else if (event is NavigateToProductDetail) {
+	    yield ProductDetailState(event.productId);
+	  }
+  }
+}
+
+
 ===== lib/services/store/product.dart =====
 class Product {
   String title;
   String description;
+  String category;
   double unitPrice;
   List<String> images;
   String sku;
@@ -14,6 +91,7 @@ class Product {
   Product({
     required this.title,
     required this.description,
+    required this.category,
     required this.unitPrice,
     required this.images,
     required this.sku,
@@ -100,22 +178,15 @@ class AppColors {
 
 ===== lib/widgets/drawer_list_tile.dart =====
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 
 class DrawerListTile extends StatelessWidget {
   final String title;
-  final double screenWidth;
-  final double screenHeight;
-  final double fontSize;
-  final FontWeight fontWeight;
   final VoidCallback onTap;
 
   const DrawerListTile({
     super.key,
     required this.title,
-    required this.screenWidth,
-    required this.screenHeight,
-    required this.fontSize,
-    required this.fontWeight,
     required this.onTap,
   });
 
@@ -123,16 +194,17 @@ class DrawerListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Padding(
-        padding: EdgeInsets.only(
-          left: screenWidth * 0.07,
-          top: screenHeight * 0.01,
-          bottom: screenHeight * 0.01,
+        padding: const EdgeInsets.only(
+          left: 28.0,
+          top: 8.0,
+          bottom: 8.0,
         ),
         child: Text(
           title,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: fontWeight,
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w100,
+            color: AppColors.primaryBurgundy,
           ),
         ),
       ),
@@ -147,102 +219,112 @@ class DrawerListTile extends StatelessWidget {
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/services/store/product.dart';
-import 'dart:math';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  final double screenWidth;
-  final double screenHeight;
 
   const ProductCard({
     required this.product,
-    required this.screenWidth,
-    required this.screenHeight,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        //TODO redirect to the detailed view of the product
-      },
-      child: Card(
-        color: AppColors.primaryCream,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppColors.secondaryGold),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.01),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxHeight: screenHeight * 0.26,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          color: AppColors.primaryCream,
+          shape: const RoundedRectangleBorder(
+            side: BorderSide(
+              color: AppColors.secondaryGold,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+          ),
+          elevation: 4.0,
+          child: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 8.0,
+                    left: 8.0,
+                    right: 8.0,
                   ),
-                  child: Image.asset(
-                    product.images[0],
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0),
+                    ),
+                    child: Image.asset(
+                      product.images[0],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.02,
-                  vertical: screenHeight * 0.005,
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 8.0,
+                  bottom: 8.0,
+                  left: 12.0,
                 ),
-                child: Text(
-                  product.title,
-                  style: TextStyle(
-                    color: AppColors.primaryBurgundy,
-                    fontSize: min(screenHeight * 0.022, 18),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-              ),
-            ),
-            Container(
-              color: AppColors.secondaryGreen,
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '\$${product.unitPrice.toStringAsFixed(2)}',
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    product.title,
                     style: const TextStyle(
-                      color: AppColors.primaryCream,
+                      color: AppColors.primaryBurgundy,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
                     ),
+                    maxLines: 2,
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondaryGold,
-                      textStyle: const TextStyle(
-                        color: AppColors.primaryBurgundy,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      //TODO: handle button press
-                    },
-                    child: const Text('View'),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.symmetric(horizontal: 1.32),
+                decoration: const BoxDecoration(
+                  color: AppColors.secondaryGreen,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        color: AppColors.primaryCream,
+                        fontWeight: FontWeight.w100,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryGold,
+                        textStyle: const TextStyle(
+                          color: AppColors.primaryBurgundy,
+                        ),
+                        shape: const LinearBorder(),
+                      ),
+                      onPressed: () {
+                        // Handle button press
+                      },
+                      child: const Text('View'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -251,6 +333,7 @@ class ProductCard extends StatelessWidget {
 
 ===== lib/widgets/custom_search_delegate.dart =====
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/services/store/product.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
@@ -258,20 +341,21 @@ class CustomSearchDelegate extends SearchDelegate {
 
   CustomSearchDelegate(this.data);
 
+  //TODO change the font weight of the search prompt
+
   @override
   ThemeData appBarTheme(BuildContext context) {
     return ThemeData(
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 10.0,
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(color: Colors.black),
-          border: InputBorder.none,
-        ),
-        textTheme: const TextTheme(
-          headlineMedium: TextStyle(color: Colors.black, fontSize: 18),
-        ));
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primaryBurgundy,
+        elevation: 10.0,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.primaryCream),
+      inputDecorationTheme: const InputDecorationTheme(
+        hintStyle: TextStyle(color: Color.fromARGB(255, 131, 131, 131)),
+        border: InputBorder.none,
+      ),
+    );
   }
 
   @override
@@ -281,6 +365,7 @@ class CustomSearchDelegate extends SearchDelegate {
         padding: const EdgeInsets.all(8.0),
         child: IconButton(
           icon: const Icon(Icons.clear),
+          color: AppColors.primaryCream,
           onPressed: () {
             if (query.isEmpty) {
               close(context, null);
@@ -298,13 +383,23 @@ class CustomSearchDelegate extends SearchDelegate {
     return IconButton(
       icon: const IconTheme(
         data: IconThemeData(size: 22.0),
-        child: Icon(Icons.arrow_back),
+        child: Icon(
+          Icons.arrow_back,
+          color: AppColors.primaryCream,
+        ),
       ),
       onPressed: () {
         close(context, null);
       },
     );
   }
+
+  @override
+  TextStyle? get searchFieldStyle => const TextStyle(
+        color: AppColors.primaryCream,
+        fontSize: 18,
+        fontWeight: FontWeight.w100,
+      );
 
   @override
   Widget buildResults(BuildContext context) {
@@ -314,8 +409,48 @@ class CustomSearchDelegate extends SearchDelegate {
     return ListView.builder(
       itemCount: results.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(results[index].title),
+        final product = results[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Card(
+            color: const Color(
+                0xFFF5F5DC), // Background color similar to the image
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Color(0xFFC9A32C)), // Border color
+              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+            ),
+            child: ListTile(
+              leading: Image.network(
+                product.images[0],
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
+              ),
+              title: Text(
+                product.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5C1A1B), // Text color
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(product.category), // Displaying category (e.g., Guitars)
+                  Text(
+                    '\$${product.unitPrice}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green, // Price color
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
@@ -328,24 +463,58 @@ class CustomSearchDelegate extends SearchDelegate {
         .toList();
 
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 30.0,
-      ),
+      padding: const EdgeInsets.only(top: 20.0),
       child: ListView.builder(
         itemCount: suggestions.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Padding(
-              padding: const EdgeInsets.only(
-                left: 22.0,
-                right: 22.0,
+          final product = suggestions[index];
+          return Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+            child: Card(
+              color: const Color(0xFFF5F5DC), // Background color
+              shape: RoundedRectangleBorder(
+                side:
+                    const BorderSide(color: Color(0xFFC9A32C)), // Border color
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Text(suggestions[index].title),
+              child: ListTile(
+                leading: Image.network(
+                  product.images[0],
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+                title: Text(
+                  product.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5C1A1B),
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.category,
+                    ), // Displaying category (e.g., Guitars)
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  query = suggestions[index].title;
+                  showResults(context);
+                },
+              ),
             ),
-            onTap: () {
-              query = suggestions[index].title;
-              showResults(context);
-            },
           );
         },
       ),
@@ -357,27 +526,26 @@ class CustomSearchDelegate extends SearchDelegate {
 
 ===== lib/widgets/custom_drawer.dart =====
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/services/bloc/navigation_bloc.dart';
+import 'package:frontend/services/bloc/navigation_events.dart';
 import 'package:frontend/widgets/drawer_list_tile.dart';
 
 class CustomDrawer extends StatelessWidget {
-  final double screenWidth;
-  final double screenHeight;
-  final double titleFontSize;
-  final double drawerItemFontSize;
   final List<String> drawerItems;
 
   const CustomDrawer({
     super.key,
-    required this.screenWidth,
-    required this.screenHeight,
-    required this.titleFontSize,
-    required this.drawerItemFontSize,
     required this.drawerItems,
   });
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Drawer(
+      backgroundColor: AppColors.primaryCream,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.zero,
@@ -387,50 +555,58 @@ class CustomDrawer extends StatelessWidget {
       width: screenWidth * 0.7,
       child: ListView.separated(
         padding: EdgeInsets.zero,
-        itemCount: drawerItems.length + 1, // +1 for the header
+        itemCount: drawerItems.length + 2, // +1 for the header & box
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.05,
-                top: screenHeight * 0.02,
-                bottom: screenHeight * 0.02,
+            return Container(
+              color: AppColors.primaryBurgundy,
+              padding: const EdgeInsets.only(
+                left: 18.0,
+                top: 8.0,
+                bottom: 10.0,
               ),
-              child: Text(
+              child: const Text(
                 'Charly Store',
                 style: TextStyle(
-                  fontSize: titleFontSize,
-                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryCream,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             );
+          } else if (index == 1) {
+            return const SizedBox(height: 22.0);
           } else {
-            final title = drawerItems[index - 1];
+            final title = drawerItems[index - 2];
             return DrawerListTile(
               title: title,
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
-              fontSize: drawerItemFontSize,
-              fontWeight: FontWeight.w100,
               onTap: () {
                 // TODO: handle navigation based on the title
                 if (title == 'Home') {
                   // Navigate to home screen
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHome());
                 } else if (title == 'Categories') {
                   // Navigate to categories
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToCategories());
                 } else if (title == 'Help & Support') {
                   // Navigate to help & support
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHelpSupport());
                 }
               },
             );
           }
         },
         separatorBuilder: (BuildContext context, int index) {
-          return index == 0
+          return [0, 1].contains(index)
               ? const SizedBox.shrink()
               : Divider(
+                  height: 1.0,
                   indent: screenWidth * 0.08,
                   endIndent: screenWidth * 0.08,
+                  color: AppColors.secondaryGold,
                 );
         },
       ),
@@ -531,6 +707,7 @@ class ProductDetailView extends StatelessWidget {
 
 ===== lib/views/store/main_store_view.dart =====
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/widgets/custom_drawer.dart';
 import 'package:frontend/widgets/custom_search_delegate.dart';
 import 'package:frontend/services/store/product.dart';
@@ -540,6 +717,7 @@ final List<Product> mockProducts = [
   Product(
     title: 'Fender Stratocaster',
     description: 'Classic electric guitar with a timeless sound.',
+    category: 'Guitar',
     unitPrice: 1199.99,
     images: [
       'assets/images/fender-stratocaster/fender-stratocaster-1.jpg',
@@ -559,6 +737,7 @@ final List<Product> mockProducts = [
     title: 'Gibson Les Paul',
     description: 'Iconic electric guitar known for its rich tone.',
     unitPrice: 2499.99,
+    category: 'Guitar',
     images: [
       'assets/images/gibson-les-paul/gibson-les-paul-1.jpg',
       'assets/images/gibson-les-paul/gibson-les-paul-2.jpg',
@@ -576,6 +755,7 @@ final List<Product> mockProducts = [
     title: 'Fender Telecaster',
     description: 'Versatile electric guitar with a distinctive twang.',
     unitPrice: 999.99,
+    category: 'Guitar',
     images: [
       'assets/images/fender-telecaster/fender-telecaster-1.jpeg',
     ],
@@ -590,6 +770,7 @@ final List<Product> mockProducts = [
     title: 'Gibson SG',
     description: 'Classic electric guitar with a powerful sound.',
     unitPrice: 1999.99,
+    category: 'Guitar',
     images: [
       'assets/images/gibson-sg/gibson-sg-1.jpeg',
     ],
@@ -604,6 +785,7 @@ final List<Product> mockProducts = [
     title: 'Shure SM58 Microphone',
     description: 'Legendary vocal microphone with excellent sound quality.',
     unitPrice: 99.99,
+    category: 'Audio',
     images: [
       'assets/images/mic-shure/mic-shure-1.jpeg',
     ],
@@ -618,6 +800,7 @@ final List<Product> mockProducts = [
     title: 'Universal Audio Apollo Twin X',
     description: 'High-quality audio interface for professional recording.',
     unitPrice: 1299.99,
+    category: 'Audio',
     images: [
       'assets/images/apollo-interface/apollo-interface-1.jpeg',
     ],
@@ -632,6 +815,7 @@ final List<Product> mockProducts = [
     title: 'Marshall JVM410H Amplifier',
     description: 'Versatile guitar amplifier with a wide range of tones.',
     unitPrice: 1999.99,
+    category: 'Amplifier',
     images: [
       'assets/images/marshall-jvm410h/marshall-jvm410h-1.jpeg',
     ],
@@ -646,6 +830,7 @@ final List<Product> mockProducts = [
     title: 'Orange Rockerverb 50 MKIII',
     description: 'Powerful and versatile guitar amplifier head.',
     unitPrice: 2499.99,
+    category: 'Amplifier',
     images: [
       'assets/images/orange-rockerverb50-mkii/orange-rockerverb50-mkii-1.jpeg',
     ],
@@ -665,21 +850,25 @@ class MainStoreView extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double titleFontSize = screenHeight * 0.037;
-    double drawerItemFontSize = screenHeight * 0.022;
 
     final List<String> drawerItems = ['Home', 'Categories', 'Help & Support'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(
+        backgroundColor: AppColors.primaryBurgundy,
+        title: const Align(
+          alignment: Alignment.centerLeft,
           child: Text(
             'Charly Store',
             style: TextStyle(
-              fontSize: titleFontSize,
-              fontWeight: FontWeight.bold,
+              fontSize: 28.0,
+              fontWeight: FontWeight.w400,
+              color: AppColors.primaryCream,
             ),
           ),
+        ),
+        iconTheme: const IconThemeData(
+          color: AppColors.primaryCream,
         ),
         actions: [
           Padding(
@@ -697,27 +886,22 @@ class MainStoreView extends StatelessWidget {
         ],
       ),
       drawer: CustomDrawer(
-        screenWidth: screenWidth,
-        screenHeight: screenHeight,
-        titleFontSize: titleFontSize,
-        drawerItemFontSize: drawerItemFontSize,
         drawerItems: drawerItems,
       ),
+      backgroundColor: AppColors.primaryCream,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
-            childAspectRatio: 0.75,
+            childAspectRatio: screenHeight / screenWidth * 0.55,
           ),
           itemCount: mockProducts.length,
           itemBuilder: (context, index) {
             return ProductCard(
               product: mockProducts[index],
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
             );
           },
         ),

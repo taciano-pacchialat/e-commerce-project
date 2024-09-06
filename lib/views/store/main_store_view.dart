@@ -180,6 +180,7 @@ class MainStoreView extends StatelessWidget {
       drawer: CustomDrawer(
         drawerItems: drawerItems,
       ),
+      backgroundColor: AppColors.primaryCream,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView.builder(
@@ -187,7 +188,7 @@ class MainStoreView extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
-            childAspectRatio: screenHeight / screenWidth * 0.48,
+            childAspectRatio: screenHeight / screenWidth * 0.55,
           ),
           itemCount: mockProducts.length,
           itemBuilder: (context, index) {
