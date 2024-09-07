@@ -7,9 +7,14 @@ class BaseScaffold extends StatelessWidget {
   final Widget body;
   final String title;
   final List<Widget>? actions;
+  final Widget? bottomNavigationBar;
 
   const BaseScaffold(
-      {super.key, required this.body, required this.title, this.actions});
+      {super.key,
+      required this.body,
+      required this.title,
+      this.actions,
+      this.bottomNavigationBar});
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +37,7 @@ class BaseScaffold extends StatelessWidget {
       drawer: const CustomDrawer(drawerItems: DrawerItems.items),
       backgroundColor: AppColors.primaryCream,
       body: body,
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 }

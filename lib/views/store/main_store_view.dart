@@ -6,6 +6,7 @@ import 'package:e_commerce_project/widgets/product_card.dart';
 
 final List<Product> mockProducts = [
   Product(
+    id: '1',
     title: 'Fender Stratocaster',
     description: 'Classic electric guitar with a timeless sound.',
     category: 'Guitar',
@@ -23,8 +24,19 @@ final List<Product> mockProducts = [
     lastUpdate: DateTime.now(),
     productCollection: 'Guitars',
     promotion: true,
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
   ),
   Product(
+    id: '2',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
     title: 'Gibson Les Paul',
     description: 'Iconic electric guitar known for its rich tone.',
     unitPrice: 2499.99,
@@ -43,6 +55,12 @@ final List<Product> mockProducts = [
     promotion: false,
   ),
   Product(
+    id: '3',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
     title: 'Fender Telecaster',
     description: 'Versatile electric guitar with a distinctive twang.',
     unitPrice: 999.99,
@@ -58,6 +76,12 @@ final List<Product> mockProducts = [
     promotion: true,
   ),
   Product(
+    id: '4',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
     title: 'Gibson SG',
     description: 'Classic electric guitar with a powerful sound.',
     unitPrice: 1999.99,
@@ -73,6 +97,12 @@ final List<Product> mockProducts = [
     promotion: false,
   ),
   Product(
+    id: '5',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
     title: 'Shure SM58 Microphone',
     description: 'Legendary vocal microphone with excellent sound quality.',
     unitPrice: 99.99,
@@ -88,6 +118,12 @@ final List<Product> mockProducts = [
     promotion: true,
   ),
   Product(
+    id: '6',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
     title: 'Universal Audio Apollo Twin X',
     description: 'High-quality audio interface for professional recording.',
     unitPrice: 1299.99,
@@ -103,6 +139,12 @@ final List<Product> mockProducts = [
     promotion: false,
   ),
   Product(
+    id: '7',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
     title: 'Marshall JVM410H Amplifier',
     description: 'Versatile guitar amplifier with a wide range of tones.',
     unitPrice: 1999.99,
@@ -118,6 +160,12 @@ final List<Product> mockProducts = [
     promotion: true,
   ),
   Product(
+    id: '8',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
     title: 'Orange Rockerverb 50 MKIII',
     description: 'Powerful and versatile guitar amplifier head.',
     unitPrice: 2499.99,

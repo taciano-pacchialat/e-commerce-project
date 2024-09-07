@@ -1,3 +1,4 @@
+import 'package:e_commerce_project/services/store/product.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class NavigationState extends Equatable {
@@ -24,10 +25,9 @@ class HelpSupportState extends NavigationState {
 }
 
 class ProductDetailState extends NavigationState {
-  final String productId;
-
-  const ProductDetailState(this.productId);
+  final Product product;
+  const ProductDetailState(this.product);
 
   @override
-  List<Object> get props => [productId];
+  List<Object> get props => [product];
 }

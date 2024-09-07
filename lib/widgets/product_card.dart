@@ -1,6 +1,9 @@
+import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
+import 'package:e_commerce_project/services/bloc/navigation_events.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/constants/app_colors.dart';
 import 'package:e_commerce_project/services/store/product.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -96,7 +99,8 @@ class ProductCard extends StatelessWidget {
                         shape: const LinearBorder(),
                       ),
                       onPressed: () {
-                        // Handle button press
+                        BlocProvider.of<NavigationBloc>(context)
+                            .add(NavigateToProductDetail(product));
                       },
                       child: const Text('View'),
                     ),
