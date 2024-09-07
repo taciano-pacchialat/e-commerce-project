@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/services/bloc/navigation_bloc.dart';
-import 'package:frontend/services/bloc/navigation_events.dart';
-import 'package:frontend/widgets/drawer_list_tile.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
+import 'package:e_commerce_project/services/bloc/navigation_events.dart';
+import 'package:e_commerce_project/widgets/drawer_list_tile.dart';
 
 class CustomDrawer extends StatelessWidget {
   final List<String> drawerItems;
@@ -39,7 +39,7 @@ class CustomDrawer extends StatelessWidget {
                 bottom: 10.0,
               ),
               child: const Text(
-                'Charly Store',
+                'Charly\'s Store',
                 style: TextStyle(
                   color: AppColors.primaryCream,
                   fontSize: 28.0,

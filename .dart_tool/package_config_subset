@@ -46,6 +46,10 @@ flutter_lints
 3.1
 file:///home/taci/.pub-cache/hosted/pub.dev/flutter_lints-3.0.2/
 file:///home/taci/.pub-cache/hosted/pub.dev/flutter_lints-3.0.2/lib/
+font_awesome_flutter
+3.0
+file:///home/taci/.pub-cache/hosted/pub.dev/font_awesome_flutter-10.7.0/
+file:///home/taci/.pub-cache/hosted/pub.dev/font_awesome_flutter-10.7.0/lib/
 leak_tracker
 3.2
 file:///home/taci/.pub-cache/hosted/pub.dev/leak_tracker-10.0.4/
@@ -118,7 +122,7 @@ vm_service
 3.3
 file:///home/taci/.pub-cache/hosted/pub.dev/vm_service-14.2.1/
 file:///home/taci/.pub-cache/hosted/pub.dev/vm_service-14.2.1/lib/
-frontend
+e_commerce_project
 3.4
 file:///home/taci/repos/e-commerce-project/
 file:///home/taci/repos/e-commerce-project/lib/

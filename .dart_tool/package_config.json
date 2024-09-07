@@ -86,6 +86,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "font_awesome_flutter",
+      "rootUri": "file:///home/taci/.pub-cache/hosted/pub.dev/font_awesome_flutter-10.7.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "leak_tracker",
       "rootUri": "file:///home/taci/.pub-cache/hosted/pub.dev/leak_tracker-10.0.4",
       "packageUri": "lib/",
@@ -200,13 +206,13 @@
       "languageVersion": "3.3"
     },
     {
-      "name": "frontend",
+      "name": "e_commerce_project",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     }
   ],
-  "generated": "2024-09-06T14:47:02.948319Z",
+  "generated": "2024-09-06T18:40:00.332380Z",
   "generator": "pub",
   "generatorVersion": "3.4.4",
   "flutterRoot": "file:///home/taci/snap/flutter/common/flutter",

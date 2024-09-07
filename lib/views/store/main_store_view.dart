@@ -1,9 +1,11 @@
+import 'package:e_commerce_project/constants/drawer_items.dart';
+import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/widgets/custom_drawer.dart';
-import 'package:frontend/widgets/custom_search_delegate.dart';
-import 'package:frontend/services/store/product.dart';
-import 'package:frontend/widgets/product_card.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/widgets/custom_drawer.dart';
+import 'package:e_commerce_project/widgets/custom_search_delegate.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/widgets/product_card.dart';
 
 final List<Product> mockProducts = [
   Product(
@@ -143,44 +145,22 @@ class MainStoreView extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
-    final List<String> drawerItems = ['Home', 'Categories', 'Help & Support'];
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBurgundy,
-        title: const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Charly Store',
-            style: TextStyle(
-              fontSize: 28.0,
-              fontWeight: FontWeight.w400,
-              color: AppColors.primaryCream,
-            ),
+    return BaseScaffold(
+      title: 'Charly\'s Store',
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(mockProducts),
+              );
+            },
           ),
         ),
-        iconTheme: const IconThemeData(
-          color: AppColors.primaryCream,
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                showSearch(
-                  context: context,
-                  delegate: CustomSearchDelegate(mockProducts),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      drawer: CustomDrawer(
-        drawerItems: drawerItems,
-      ),
-      backgroundColor: AppColors.primaryCream,
+      ],
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView.builder(

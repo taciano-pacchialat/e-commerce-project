@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/constants/app_colors.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
 
 class DrawerListTile extends StatelessWidget {
   final String title;

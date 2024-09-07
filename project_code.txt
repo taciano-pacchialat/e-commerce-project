@@ -918,3 +918,2227 @@ void main() {
 
 
 
+===== lib/helpers/loading_screen_controller.dart =====
+import 'package:flutter/foundation.dart' show immutable;
+
+typedef CloseLoadingScreen = bool Function();
+typedef UpdateLoadingScreen = bool Function(String text);
+
+@immutable
+class LoadingScreenController {
+  final CloseLoadingScreen close;
+  final UpdateLoadingScreen update;
+
+  const LoadingScreenController({required this.close, required this.update});
+}
+
+
+
+===== lib/helpers/loading_screen.dart =====
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:frontend/constants/app_colors.dart';
+
+class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  _LoadingScreenState createState() => _LoadingScreenState();
+}
+
+class _LoadingScreenState extends State<LoadingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat();
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.primaryCream,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (_, child) {
+                return Transform.rotate(
+                  angle: _animation.value * 2 * pi,
+                  child: child,
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Audio Gear Catalog',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryBurgundy,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const SizedBox(
+              width: 200,
+              child: LinearProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AppColors.primaryBurgundy),
+                backgroundColor: AppColors.secondaryGold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Loading your gear...',
+              style: TextStyle(
+                color: AppColors.secondaryGold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/services/bloc/navigation_states.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationState extends Equatable {
+  const NavigationState({
+    required this.isLoading,
+    this.loadingText = 'Please wait a moment',
+  });
+
+  final bool isLoading;
+  final String? loadingText;
+
+  @override
+  List<Object> get props => [isLoading, loadingText ?? ''];
+}
+
+class HomeState extends NavigationState {
+  const HomeState({required super.isLoading});
+}
+
+class CategoriesState extends NavigationState {
+  const CategoriesState({required super.isLoading});
+}
+
+class HelpSupportState extends NavigationState {
+  const HelpSupportState({required super.isLoading});
+}
+
+class ProductDetailState extends NavigationState {
+  final String productId;
+
+  const ProductDetailState(this.productId) : super(isLoading: false);
+
+  @override
+  List<Object> get props => [productId, isLoading];
+}
+
+
+
+===== lib/services/bloc/navigation_events.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationEvent extends Equatable {
+  const NavigationEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class NavigateToHome extends NavigationEvent {}
+
+class NavigateToCategories extends NavigationEvent {}
+
+class NavigateToHelpSupport extends NavigationEvent {}
+
+class NavigateToProductDetail extends NavigationEvent {
+  final String productId;
+
+  const NavigateToProductDetail(this.productId);
+
+  @override
+  List<Object> get props => [productId];
+}
+
+
+
+===== lib/services/bloc/navigation_bloc.dart =====
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'navigation_events.dart';
+import 'navigation_states.dart';
+
+class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
+  NavigationBloc() : super(const HomeState(isLoading: false)) {
+    on<NavigateToHome>(
+        (event, emit) => emit(const HomeState(isLoading: false)));
+    on<NavigateToCategories>(
+        (event, emit) => emit(const CategoriesState(isLoading: false)));
+    on<NavigateToHelpSupport>(
+        (event, emit) => emit(const HelpSupportState(isLoading: false)));
+    on<NavigateToProductDetail>(
+        (event, emit) => emit(ProductDetailState(event.productId)));
+  }
+}
+
+
+
+===== lib/services/store/product.dart =====
+class Product {
+  String title;
+  String description;
+  String category;
+  double unitPrice;
+  List<String> images;
+  String sku;
+  String slug;
+  int inventory;
+  DateTime lastUpdate;
+  String productCollection;
+  bool promotion;
+
+  Product({
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.unitPrice,
+    required this.images,
+    required this.sku,
+    required this.slug,
+    required this.inventory,
+    required this.lastUpdate,
+    required this.productCollection,
+    required this.promotion,
+  });
+}
+
+
+
+===== lib/utilities/no_paste_text_formatter.dart =====
+import 'package:flutter/services.dart';
+
+class NoPasteTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.length > oldValue.text.length + 1) {
+      return oldValue;
+    }
+    return newValue;
+  }
+}
+
+
+
+===== lib/main.dart =====
+import 'package:flutter/material.dart';
+import 'package:frontend/helpers/loading_screen.dart';
+import 'package:frontend/services/bloc/navigation_events.dart';
+import 'package:frontend/services/bloc/navigation_states.dart';
+import 'package:frontend/views/store/main_store_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'services/bloc/navigation_bloc.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MaterialApp(
+      title: 'Charly Store',
+      home: BlocProvider<NavigationBloc>(
+        create: (context) => NavigationBloc(),
+        child: const HomePage(),
+      ),
+    ),
+  );
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    context.read<NavigationBloc>().add(NavigateToHome());
+    return BlocConsumer<NavigationBloc, NavigationState>(
+      listener: (context, state) {
+        if (state.isLoading) {
+          showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+            return const LoadingScreen();
+          },);
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+      },
+      builder: (context, state) {
+        if (state is HomeState) {
+          return const MainStoreView();
+        } else if (state is CategoriesState) {
+          return const CategoriesView();
+        } else if (state is HelpSupportState) {
+          return const HelpSupportView();
+        } else {
+          return const Scaffold(
+            body: CircularProgressIndicator(),
+          )
+        }
+      },
+    );
+  }
+}
+
+
+
+===== lib/constants/app_colors.dart =====
+import 'package:flutter/material.dart';
+
+class AppColors {
+  // primary colors
+  static const Color primaryBurgundy = Color.fromARGB(255, 92, 26, 27);
+  static const Color primaryCream = Color.fromARGB(255, 245, 245, 220);
+
+  // secondary colors
+  static const Color secondaryGold = Color.fromARGB(255, 201, 163, 44);
+  static const Color secondaryGreen = Color.fromARGB(255, 47, 79, 79);
+
+  // accent colors
+  static const Color accentBrown = Color.fromARGB(255, 139, 69, 19);
+  static const Color accentGray = Color.fromARGB(255, 112, 128, 144);
+}
+
+
+
+===== lib/widgets/drawer_list_tile.dart =====
+import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
+
+class DrawerListTile extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const DrawerListTile({
+    super.key,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Padding(
+        padding: const EdgeInsets.only(
+          left: 28.0,
+          top: 8.0,
+          bottom: 8.0,
+        ),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w100,
+            color: AppColors.primaryBurgundy,
+          ),
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+}
+
+
+
+===== lib/widgets/product_card.dart =====
+import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/services/store/product.dart';
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+
+  const ProductCard({
+    required this.product,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          color: AppColors.primaryCream,
+          shape: const RoundedRectangleBorder(
+            side: BorderSide(
+              color: AppColors.secondaryGold,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+          ),
+          elevation: 4.0,
+          child: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 8.0,
+                    left: 8.0,
+                    right: 8.0,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0),
+                    ),
+                    child: Image.asset(
+                      product.images[0],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 8.0,
+                  bottom: 8.0,
+                  left: 12.0,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    product.title,
+                    style: const TextStyle(
+                      color: AppColors.primaryBurgundy,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                    maxLines: 2,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.symmetric(horizontal: 1.32),
+                decoration: const BoxDecoration(
+                  color: AppColors.secondaryGreen,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        color: AppColors.primaryCream,
+                        fontWeight: FontWeight.w100,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryGold,
+                        textStyle: const TextStyle(
+                          color: AppColors.primaryBurgundy,
+                        ),
+                        shape: const LinearBorder(),
+                      ),
+                      onPressed: () {
+                        // Handle button press
+                      },
+                      child: const Text('View'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+
+
+===== lib/widgets/custom_search_delegate.dart =====
+import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/services/store/product.dart';
+
+class CustomSearchDelegate extends SearchDelegate {
+  final List<Product> data;
+
+  CustomSearchDelegate(this.data);
+
+  //TODO change the font weight of the search prompt
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primaryBurgundy,
+        elevation: 10.0,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.primaryCream),
+      inputDecorationTheme: const InputDecorationTheme(
+        hintStyle: TextStyle(color: Color.fromARGB(255, 131, 131, 131)),
+        border: InputBorder.none,
+      ),
+    );
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: IconButton(
+          icon: const Icon(Icons.clear),
+          color: AppColors.primaryCream,
+          onPressed: () {
+            if (query.isEmpty) {
+              close(context, null);
+            } else {
+              query = '';
+            }
+          },
+        ),
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const IconTheme(
+        data: IconThemeData(size: 22.0),
+        child: Icon(
+          Icons.arrow_back,
+          color: AppColors.primaryCream,
+        ),
+      ),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  TextStyle? get searchFieldStyle => const TextStyle(
+        color: AppColors.primaryCream,
+        fontSize: 18,
+        fontWeight: FontWeight.w100,
+      );
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final results = data
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final product = results[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Card(
+            color: const Color(
+                0xFFF5F5DC), // Background color similar to the image
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Color(0xFFC9A32C)), // Border color
+              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+            ),
+            child: ListTile(
+              leading: Image.network(
+                product.images[0],
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
+              ),
+              title: Text(
+                product.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5C1A1B), // Text color
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(product.category), // Displaying category (e.g., Guitars)
+                  Text(
+                    '\$${product.unitPrice}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green, // Price color
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestions = data
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0),
+      child: ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final product = suggestions[index];
+          return Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+            child: Card(
+              color: const Color(0xFFF5F5DC), // Background color
+              shape: RoundedRectangleBorder(
+                side:
+                    const BorderSide(color: Color(0xFFC9A32C)), // Border color
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: ListTile(
+                leading: Image.network(
+                  product.images[0],
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+                title: Text(
+                  product.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5C1A1B),
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.category,
+                    ), // Displaying category (e.g., Guitars)
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  query = suggestions[index].title;
+                  showResults(context);
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+
+===== lib/widgets/custom_drawer.dart =====
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/services/bloc/navigation_bloc.dart';
+import 'package:frontend/services/bloc/navigation_events.dart';
+import 'package:frontend/widgets/drawer_list_tile.dart';
+
+class CustomDrawer extends StatelessWidget {
+  final List<String> drawerItems;
+
+  const CustomDrawer({
+    super.key,
+    required this.drawerItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Drawer(
+      backgroundColor: AppColors.primaryCream,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.zero,
+          bottomRight: Radius.zero,
+        ),
+      ),
+      width: screenWidth * 0.7,
+      child: ListView.separated(
+        padding: EdgeInsets.zero,
+        itemCount: drawerItems.length + 2, // +1 for the header & box
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Container(
+              color: AppColors.primaryBurgundy,
+              padding: const EdgeInsets.only(
+                left: 18.0,
+                top: 8.0,
+                bottom: 10.0,
+              ),
+              child: const Text(
+                'Charly Store',
+                style: TextStyle(
+                  color: AppColors.primaryCream,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            );
+          } else if (index == 1) {
+            return const SizedBox(height: 22.0);
+          } else {
+            final title = drawerItems[index - 2];
+            return DrawerListTile(
+              title: title,
+              onTap: () {
+                // TODO: handle navigation based on the title
+                if (title == 'Home') {
+                  // Navigate to home screen
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHome());
+                } else if (title == 'Categories') {
+                  // Navigate to categories
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToCategories());
+                } else if (title == 'Help & Support') {
+                  // Navigate to help & support
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHelpSupport());
+                }
+              },
+            );
+          }
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return [0, 1].contains(index)
+              ? const SizedBox.shrink()
+              : Divider(
+                  height: 1.0,
+                  indent: screenWidth * 0.08,
+                  endIndent: screenWidth * 0.08,
+                  color: AppColors.secondaryGold,
+                );
+        },
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/product_detail_view.dart =====
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/material.dart';
+import 'package:frontend/services/store/product.dart';
+
+class ProductDetailView extends StatelessWidget {
+  final Product product;
+
+  const ProductDetailView({required this.product, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: screenWidth * 0.08,
+                right: screenWidth * 0.08,
+                top: screenHeight * 0.01,
+              ),
+              child: Text(
+                product.title,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: screenHeight * 0.7,
+                viewportFraction: 0.98,
+                enlargeCenterPage: true,
+                enlargeStrategy: CenterPageEnlargeStrategy.height,
+                enableInfiniteScroll: false,
+              ),
+              items: product.images.map(
+                (image) {
+                  return Builder(
+                    builder: (context) {
+                      return Image.asset(image, fit: BoxFit.contain);
+                    },
+                  );
+                },
+              ).toList(),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 0.0,
+                horizontal: screenWidth * 0.08,
+              ),
+              child: Text(
+                '\$${product.unitPrice.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                top: screenWidth * 0.02,
+                bottom: 0.0,
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05,
+              ),
+              child: Text(
+                product.description,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/categories_view.dart =====
+
+
+
+===== lib/views/store/main_store_view.dart =====
+import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/widgets/custom_drawer.dart';
+import 'package:frontend/widgets/custom_search_delegate.dart';
+import 'package:frontend/services/store/product.dart';
+import 'package:frontend/widgets/product_card.dart';
+
+final List<Product> mockProducts = [
+  Product(
+    title: 'Fender Stratocaster',
+    description: 'Classic electric guitar with a timeless sound.',
+    category: 'Guitar',
+    unitPrice: 1199.99,
+    images: [
+      'assets/images/fender-stratocaster/fender-stratocaster-1.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-2.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-3.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-4.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-5.jpg',
+    ],
+    sku: 'FEND-STRAT',
+    slug: 'fender-stratocaster',
+    inventory: 15,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: true,
+  ),
+  Product(
+    title: 'Gibson Les Paul',
+    description: 'Iconic electric guitar known for its rich tone.',
+    unitPrice: 2499.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/gibson-les-paul/gibson-les-paul-1.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-2.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-3.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-4.jpg',
+    ],
+    sku: 'GIBS-LESPAUL',
+    slug: 'gibson-les-paul',
+    inventory: 10,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: false,
+  ),
+  Product(
+    title: 'Fender Telecaster',
+    description: 'Versatile electric guitar with a distinctive twang.',
+    unitPrice: 999.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/fender-telecaster/fender-telecaster-1.jpeg',
+    ],
+    sku: 'FEND-TELE',
+    slug: 'fender-telecaster',
+    inventory: 8,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: true,
+  ),
+  Product(
+    title: 'Gibson SG',
+    description: 'Classic electric guitar with a powerful sound.',
+    unitPrice: 1999.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/gibson-sg/gibson-sg-1.jpeg',
+    ],
+    sku: 'GIBS-SG',
+    slug: 'gibson-sg',
+    inventory: 12,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: false,
+  ),
+  Product(
+    title: 'Shure SM58 Microphone',
+    description: 'Legendary vocal microphone with excellent sound quality.',
+    unitPrice: 99.99,
+    category: 'Audio',
+    images: [
+      'assets/images/mic-shure/mic-shure-1.jpeg',
+    ],
+    sku: 'SHURE-SM58',
+    slug: 'shure-sm58',
+    inventory: 20,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Audio',
+    promotion: true,
+  ),
+  Product(
+    title: 'Universal Audio Apollo Twin X',
+    description: 'High-quality audio interface for professional recording.',
+    unitPrice: 1299.99,
+    category: 'Audio',
+    images: [
+      'assets/images/apollo-interface/apollo-interface-1.jpeg',
+    ],
+    sku: 'UA-APOLLO',
+    slug: 'universal-audio-apollo-twin-x',
+    inventory: 5,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Audio',
+    promotion: false,
+  ),
+  Product(
+    title: 'Marshall JVM410H Amplifier',
+    description: 'Versatile guitar amplifier with a wide range of tones.',
+    unitPrice: 1999.99,
+    category: 'Amplifier',
+    images: [
+      'assets/images/marshall-jvm410h/marshall-jvm410h-1.jpeg',
+    ],
+    sku: 'MARSH-JVM410H',
+    slug: 'marshall-jvm410h',
+    inventory: 7,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Amplifiers',
+    promotion: true,
+  ),
+  Product(
+    title: 'Orange Rockerverb 50 MKIII',
+    description: 'Powerful and versatile guitar amplifier head.',
+    unitPrice: 2499.99,
+    category: 'Amplifier',
+    images: [
+      'assets/images/orange-rockerverb50-mkii/orange-rockerverb50-mkii-1.jpeg',
+    ],
+    sku: 'ORANGE-RV50',
+    slug: 'orange-rockerverb50-mkii',
+    inventory: 3,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Amplifiers',
+    promotion: false,
+  ),
+];
+
+class MainStoreView extends StatelessWidget {
+  const MainStoreView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    final List<String> drawerItems = ['Home', 'Categories', 'Help & Support'];
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryBurgundy,
+        title: const Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Charly Store',
+            style: TextStyle(
+              fontSize: 28.0,
+              fontWeight: FontWeight.w400,
+              color: AppColors.primaryCream,
+            ),
+          ),
+        ),
+        iconTheme: const IconThemeData(
+          color: AppColors.primaryCream,
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(mockProducts),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      drawer: CustomDrawer(
+        drawerItems: drawerItems,
+      ),
+      backgroundColor: AppColors.primaryCream,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8.0,
+            mainAxisSpacing: 8.0,
+            childAspectRatio: screenHeight / screenWidth * 0.55,
+          ),
+          itemCount: mockProducts.length,
+          itemBuilder: (context, index) {
+            return ProductCard(
+              product: mockProducts[index],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(const MaterialApp(
+    home: MainStoreView(),
+  ));
+}
+
+
+
+===== lib/helpers/loading_screen_controller.dart =====
+import 'package:flutter/foundation.dart' show immutable;
+
+typedef CloseLoadingScreen = bool Function();
+typedef UpdateLoadingScreen = bool Function(String text);
+
+@immutable
+class LoadingScreenController {
+  final CloseLoadingScreen close;
+  final UpdateLoadingScreen update;
+
+  const LoadingScreenController({required this.close, required this.update});
+}
+
+
+
+===== lib/helpers/loading_screen.dart =====
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:e_commerce_project/constants/app_colors.dart';
+
+class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  _LoadingScreenState createState() => _LoadingScreenState();
+}
+
+class _LoadingScreenState extends State<LoadingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat();
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.primaryCream,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (_, child) {
+                return Transform.rotate(
+                  angle: _animation.value * 2 * pi,
+                  child: child,
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Audio Gear Catalog',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryBurgundy,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const SizedBox(
+              width: 200,
+              child: LinearProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AppColors.primaryBurgundy),
+                backgroundColor: AppColors.secondaryGold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Loading your gear...',
+              style: TextStyle(
+                color: AppColors.secondaryGold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/services/bloc/navigation_states.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationState extends Equatable {
+  const NavigationState({
+    required this.isLoading,
+    this.loadingText = 'Please wait a moment',
+  });
+
+  final bool isLoading;
+  final String? loadingText;
+
+  @override
+  List<Object> get props => [isLoading, loadingText ?? ''];
+}
+
+class HomeState extends NavigationState {
+  const HomeState({required super.isLoading});
+}
+
+class CategoriesState extends NavigationState {
+  const CategoriesState({required super.isLoading});
+}
+
+class HelpSupportState extends NavigationState {
+  const HelpSupportState({required super.isLoading});
+}
+
+class ProductDetailState extends NavigationState {
+  final String productId;
+
+  const ProductDetailState(this.productId) : super(isLoading: false);
+
+  @override
+  List<Object> get props => [productId, isLoading];
+}
+
+
+
+===== lib/services/bloc/navigation_events.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationEvent extends Equatable {
+  const NavigationEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class NavigateToHome extends NavigationEvent {}
+
+class NavigateToCategories extends NavigationEvent {}
+
+class NavigateToHelpSupport extends NavigationEvent {}
+
+class NavigateToProductDetail extends NavigationEvent {
+  final String productId;
+
+  const NavigateToProductDetail(this.productId);
+
+  @override
+  List<Object> get props => [productId];
+}
+
+
+
+===== lib/services/bloc/navigation_bloc.dart =====
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'navigation_events.dart';
+import 'navigation_states.dart';
+
+class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
+  NavigationBloc() : super(const HomeState(isLoading: false)) {
+    on<NavigateToHome>(
+        (event, emit) => emit(const HomeState(isLoading: false)));
+    on<NavigateToCategories>(
+        (event, emit) => emit(const CategoriesState(isLoading: false)));
+    on<NavigateToHelpSupport>(
+        (event, emit) => emit(const HelpSupportState(isLoading: false)));
+    on<NavigateToProductDetail>(
+        (event, emit) => emit(ProductDetailState(event.productId)));
+  }
+}
+
+
+
+===== lib/services/store/product.dart =====
+class Product {
+  String title;
+  String description;
+  String category;
+  double unitPrice;
+  List<String> images;
+  String sku;
+  String slug;
+  int inventory;
+  DateTime lastUpdate;
+  String productCollection;
+  bool promotion;
+
+  Product({
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.unitPrice,
+    required this.images,
+    required this.sku,
+    required this.slug,
+    required this.inventory,
+    required this.lastUpdate,
+    required this.productCollection,
+    required this.promotion,
+  });
+}
+
+
+
+===== lib/utilities/no_paste_text_formatter.dart =====
+import 'package:flutter/services.dart';
+
+class NoPasteTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.length > oldValue.text.length + 1) {
+      return oldValue;
+    }
+    return newValue;
+  }
+}
+
+
+
+===== lib/main.dart =====
+import 'package:e_commerce_project/views/store/categories_view.dart';
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/helpers/loading_screen.dart';
+import 'package:e_commerce_project/services/bloc/navigation_events.dart';
+import 'package:e_commerce_project/services/bloc/navigation_states.dart';
+import 'package:e_commerce_project/views/store/main_store_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'services/bloc/navigation_bloc.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MaterialApp(
+      title: 'Charly Store',
+      home: BlocProvider<NavigationBloc>(
+        create: (context) => NavigationBloc(),
+        child: const HomePage(),
+      ),
+    ),
+  );
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    context.read<NavigationBloc>().add(NavigateToHome());
+    return BlocConsumer<NavigationBloc, NavigationState>(
+      listener: (context, state) {
+        if (state.isLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return const LoadingScreen();
+            },
+          );
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+      },
+      builder: (context, state) {
+        if (state is HomeState) {
+          return const MainStoreView();
+        } else if (state is CategoriesState) {
+          return CategoriesView();
+        } else if (state is HelpSupportState) {
+          return const Scaffold(
+            body: Text('Not yet implemented!!'),
+          );
+        } else {
+          return const Scaffold(
+            body: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+}
+
+
+
+===== lib/constants/app_colors.dart =====
+import 'package:flutter/material.dart';
+
+class AppColors {
+  // primary colors
+  static const Color primaryBurgundy = Color.fromARGB(255, 92, 26, 27);
+  static const Color primaryCream = Color.fromARGB(255, 245, 245, 220);
+
+  // secondary colors
+  static const Color secondaryGold = Color.fromARGB(255, 201, 163, 44);
+  static const Color secondaryGreen = Color.fromARGB(255, 47, 79, 79);
+
+  // accent colors
+  static const Color accentBrown = Color.fromARGB(255, 139, 69, 19);
+  static const Color accentGray = Color.fromARGB(255, 112, 128, 144);
+}
+
+
+
+===== lib/widgets/drawer_list_tile.dart =====
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+
+class DrawerListTile extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const DrawerListTile({
+    super.key,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Padding(
+        padding: const EdgeInsets.only(
+          left: 28.0,
+          top: 8.0,
+          bottom: 8.0,
+        ),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w100,
+            color: AppColors.primaryBurgundy,
+          ),
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+}
+
+
+
+===== lib/widgets/product_card.dart =====
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+
+  const ProductCard({
+    required this.product,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          color: AppColors.primaryCream,
+          shape: const RoundedRectangleBorder(
+            side: BorderSide(
+              color: AppColors.secondaryGold,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+          ),
+          elevation: 4.0,
+          child: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 8.0,
+                    left: 8.0,
+                    right: 8.0,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0),
+                    ),
+                    child: Image.asset(
+                      product.images[0],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 8.0,
+                  bottom: 8.0,
+                  left: 12.0,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    product.title,
+                    style: const TextStyle(
+                      color: AppColors.primaryBurgundy,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                    maxLines: 2,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.symmetric(horizontal: 1.32),
+                decoration: const BoxDecoration(
+                  color: AppColors.secondaryGreen,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        color: AppColors.primaryCream,
+                        fontWeight: FontWeight.w100,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryGold,
+                        textStyle: const TextStyle(
+                          color: AppColors.primaryBurgundy,
+                        ),
+                        shape: const LinearBorder(),
+                      ),
+                      onPressed: () {
+                        // Handle button press
+                      },
+                      child: const Text('View'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+
+
+===== lib/widgets/custom_search_delegate.dart =====
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+
+class CustomSearchDelegate extends SearchDelegate {
+  final List<Product> data;
+
+  CustomSearchDelegate(this.data);
+
+  //TODO change the font weight of the search prompt
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primaryBurgundy,
+        elevation: 10.0,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.primaryCream),
+      inputDecorationTheme: const InputDecorationTheme(
+        hintStyle: TextStyle(color: Color.fromARGB(255, 131, 131, 131)),
+        border: InputBorder.none,
+      ),
+    );
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: IconButton(
+          icon: const Icon(Icons.clear),
+          color: AppColors.primaryCream,
+          onPressed: () {
+            if (query.isEmpty) {
+              close(context, null);
+            } else {
+              query = '';
+            }
+          },
+        ),
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const IconTheme(
+        data: IconThemeData(size: 22.0),
+        child: Icon(
+          Icons.arrow_back,
+          color: AppColors.primaryCream,
+        ),
+      ),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  TextStyle? get searchFieldStyle => const TextStyle(
+        color: AppColors.primaryCream,
+        fontSize: 18,
+        fontWeight: FontWeight.w100,
+      );
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final results = data
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final product = results[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Card(
+            color: const Color(
+                0xFFF5F5DC), // Background color similar to the image
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Color(0xFFC9A32C)), // Border color
+              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+            ),
+            child: ListTile(
+              leading: Image.network(
+                product.images[0],
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
+              ),
+              title: Text(
+                product.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5C1A1B), // Text color
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(product.category), // Displaying category (e.g., Guitars)
+                  Text(
+                    '\$${product.unitPrice}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green, // Price color
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestions = data
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0),
+      child: ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final product = suggestions[index];
+          return Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+            child: Card(
+              color: const Color(0xFFF5F5DC), // Background color
+              shape: RoundedRectangleBorder(
+                side:
+                    const BorderSide(color: Color(0xFFC9A32C)), // Border color
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: ListTile(
+                leading: Image.network(
+                  product.images[0],
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+                title: Text(
+                  product.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5C1A1B),
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.category,
+                    ), // Displaying category (e.g., Guitars)
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  query = suggestions[index].title;
+                  showResults(context);
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+
+===== lib/widgets/custom_drawer.dart =====
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
+import 'package:e_commerce_project/services/bloc/navigation_events.dart';
+import 'package:e_commerce_project/widgets/drawer_list_tile.dart';
+
+class CustomDrawer extends StatelessWidget {
+  final List<String> drawerItems;
+
+  const CustomDrawer({
+    super.key,
+    required this.drawerItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Drawer(
+      backgroundColor: AppColors.primaryCream,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.zero,
+          bottomRight: Radius.zero,
+        ),
+      ),
+      width: screenWidth * 0.7,
+      child: ListView.separated(
+        padding: EdgeInsets.zero,
+        itemCount: drawerItems.length + 2, // +1 for the header & box
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Container(
+              color: AppColors.primaryBurgundy,
+              padding: const EdgeInsets.only(
+                left: 18.0,
+                top: 8.0,
+                bottom: 10.0,
+              ),
+              child: const Text(
+                'Charly Store',
+                style: TextStyle(
+                  color: AppColors.primaryCream,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            );
+          } else if (index == 1) {
+            return const SizedBox(height: 22.0);
+          } else {
+            final title = drawerItems[index - 2];
+            return DrawerListTile(
+              title: title,
+              onTap: () {
+                // TODO: handle navigation based on the title
+                if (title == 'Home') {
+                  // Navigate to home screen
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHome());
+                } else if (title == 'Categories') {
+                  // Navigate to categories
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToCategories());
+                } else if (title == 'Help & Support') {
+                  // Navigate to help & support
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHelpSupport());
+                }
+              },
+            );
+          }
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return [0, 1].contains(index)
+              ? const SizedBox.shrink()
+              : Divider(
+                  height: 1.0,
+                  indent: screenWidth * 0.08,
+                  endIndent: screenWidth * 0.08,
+                  color: AppColors.secondaryGold,
+                );
+        },
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/product_detail_view.dart =====
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/material.dart';
+import 'package:frontend/services/store/product.dart';
+
+class ProductDetailView extends StatelessWidget {
+  final Product product;
+
+  const ProductDetailView({required this.product, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: screenWidth * 0.08,
+                right: screenWidth * 0.08,
+                top: screenHeight * 0.01,
+              ),
+              child: Text(
+                product.title,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: screenHeight * 0.7,
+                viewportFraction: 0.98,
+                enlargeCenterPage: true,
+                enlargeStrategy: CenterPageEnlargeStrategy.height,
+                enableInfiniteScroll: false,
+              ),
+              items: product.images.map(
+                (image) {
+                  return Builder(
+                    builder: (context) {
+                      return Image.asset(image, fit: BoxFit.contain);
+                    },
+                  );
+                },
+              ).toList(),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 0.0,
+                horizontal: screenWidth * 0.08,
+              ),
+              child: Text(
+                '\$${product.unitPrice.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                top: screenWidth * 0.02,
+                bottom: 0.0,
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05,
+              ),
+              child: Text(
+                product.description,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/categories_view.dart =====
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+
+class Category {
+  final String name;
+  final Icon icon;
+  final int items;
+
+  Category({required this.name, required this.icon, required this.items});
+}
+
+class CategoriesView extends StatelessWidget {
+  final List<Category> categories = [
+    Category(
+        name: "Guitars", icon: const Icon(FontAwesomeIcons.guitar), items: 120),
+    Category(
+        name: "Audio",
+        icon: const Icon(FontAwesomeIcons.headphones),
+        items: 45),
+    Category(
+        name: "Amplifiers",
+        icon: const Icon(FontAwesomeIcons.volumeHigh),
+        items: 80),
+    Category(
+        name: "Effects Pedals",
+        icon: const Icon(FontAwesomeIcons.sliders),
+        items: 200),
+    Category(
+        name: "Accessories",
+        icon: const Icon(FontAwesomeIcons.plane),
+        items: 150),
+  ];
+
+  CategoriesView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor:
+          const Color(0xFFF5F5DC), // Background color similar to the design
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryBurgundy, // Header background color
+        title: const Text(
+          'Categories',
+          style: TextStyle(
+            color: Color(0xFFF5F5DC), // Header text color
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final category = categories[index];
+            return Card(
+              color: const Color(0xFFF5F5DC), // Card background color
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(
+                    color: Color(0xFFC9A32C)), // Card border color
+                borderRadius: BorderRadius.circular(10.0), // Card border radius
+              ),
+              child: ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor:
+                      Color(0xFF2F4F4F), // Circle icon background color
+                  child: Icon(Icons.category,
+                      color: Color(0xFFF5F5DC)), // Icon inside the circle
+                ),
+                title: Text(
+                  category.name,
+                  style: const TextStyle(
+                    color: Color(0xFF5C1A1B), // Title text color
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                subtitle: Text(
+                  '${category.items} items',
+                  style: const TextStyle(
+                    color: Color(0xFF8B4513), // Subtitle text color
+                    fontSize: 14,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: Color(0xFFC9A32C), // Trailing arrow color
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/main_store_view.dart =====
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/widgets/custom_drawer.dart';
+import 'package:e_commerce_project/widgets/custom_search_delegate.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/widgets/product_card.dart';
+
+final List<Product> mockProducts = [
+  Product(
+    title: 'Fender Stratocaster',
+    description: 'Classic electric guitar with a timeless sound.',
+    category: 'Guitar',
+    unitPrice: 1199.99,
+    images: [
+      'assets/images/fender-stratocaster/fender-stratocaster-1.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-2.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-3.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-4.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-5.jpg',
+    ],
+    sku: 'FEND-STRAT',
+    slug: 'fender-stratocaster',
+    inventory: 15,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: true,
+  ),
+  Product(
+    title: 'Gibson Les Paul',
+    description: 'Iconic electric guitar known for its rich tone.',
+    unitPrice: 2499.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/gibson-les-paul/gibson-les-paul-1.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-2.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-3.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-4.jpg',
+    ],
+    sku: 'GIBS-LESPAUL',
+    slug: 'gibson-les-paul',
+    inventory: 10,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: false,
+  ),
+  Product(
+    title: 'Fender Telecaster',
+    description: 'Versatile electric guitar with a distinctive twang.',
+    unitPrice: 999.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/fender-telecaster/fender-telecaster-1.jpeg',
+    ],
+    sku: 'FEND-TELE',
+    slug: 'fender-telecaster',
+    inventory: 8,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: true,
+  ),
+  Product(
+    title: 'Gibson SG',
+    description: 'Classic electric guitar with a powerful sound.',
+    unitPrice: 1999.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/gibson-sg/gibson-sg-1.jpeg',
+    ],
+    sku: 'GIBS-SG',
+    slug: 'gibson-sg',
+    inventory: 12,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: false,
+  ),
+  Product(
+    title: 'Shure SM58 Microphone',
+    description: 'Legendary vocal microphone with excellent sound quality.',
+    unitPrice: 99.99,
+    category: 'Audio',
+    images: [
+      'assets/images/mic-shure/mic-shure-1.jpeg',
+    ],
+    sku: 'SHURE-SM58',
+    slug: 'shure-sm58',
+    inventory: 20,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Audio',
+    promotion: true,
+  ),
+  Product(
+    title: 'Universal Audio Apollo Twin X',
+    description: 'High-quality audio interface for professional recording.',
+    unitPrice: 1299.99,
+    category: 'Audio',
+    images: [
+      'assets/images/apollo-interface/apollo-interface-1.jpeg',
+    ],
+    sku: 'UA-APOLLO',
+    slug: 'universal-audio-apollo-twin-x',
+    inventory: 5,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Audio',
+    promotion: false,
+  ),
+  Product(
+    title: 'Marshall JVM410H Amplifier',
+    description: 'Versatile guitar amplifier with a wide range of tones.',
+    unitPrice: 1999.99,
+    category: 'Amplifier',
+    images: [
+      'assets/images/marshall-jvm410h/marshall-jvm410h-1.jpeg',
+    ],
+    sku: 'MARSH-JVM410H',
+    slug: 'marshall-jvm410h',
+    inventory: 7,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Amplifiers',
+    promotion: true,
+  ),
+  Product(
+    title: 'Orange Rockerverb 50 MKIII',
+    description: 'Powerful and versatile guitar amplifier head.',
+    unitPrice: 2499.99,
+    category: 'Amplifier',
+    images: [
+      'assets/images/orange-rockerverb50-mkii/orange-rockerverb50-mkii-1.jpeg',
+    ],
+    sku: 'ORANGE-RV50',
+    slug: 'orange-rockerverb50-mkii',
+    inventory: 3,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Amplifiers',
+    promotion: false,
+  ),
+];
+
+class MainStoreView extends StatelessWidget {
+  const MainStoreView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    final List<String> drawerItems = ['Home', 'Categories', 'Help & Support'];
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryBurgundy,
+        title: const Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Charly Store',
+            style: TextStyle(
+              fontSize: 28.0,
+              fontWeight: FontWeight.w400,
+              color: AppColors.primaryCream,
+            ),
+          ),
+        ),
+        iconTheme: const IconThemeData(
+          color: AppColors.primaryCream,
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(mockProducts),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      drawer: CustomDrawer(
+        drawerItems: drawerItems,
+      ),
+      backgroundColor: AppColors.primaryCream,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8.0,
+            mainAxisSpacing: 8.0,
+            childAspectRatio: screenHeight / screenWidth * 0.55,
+          ),
+          itemCount: mockProducts.length,
+          itemBuilder: (context, index) {
+            return ProductCard(
+              product: mockProducts[index],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(const MaterialApp(
+    home: MainStoreView(),
+  ));
+}
+
+
+

@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/services/store/product.dart';
+import 'package:e_commerce_project/services/store/product.dart';
 
 class ProductDetailView extends StatelessWidget {
   final Product product;
