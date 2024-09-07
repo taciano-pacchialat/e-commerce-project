@@ -11,7 +11,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
-      title: 'Charly Store',
+      title: 'Charly\'s Hideout',
       home: BlocProvider<NavigationBloc>(
         create: (context) => NavigationBloc(),
         child: const HomePage(),
@@ -29,14 +29,18 @@ class HomePage extends StatelessWidget {
     context.read<NavigationBloc>().add(NavigateToHome());
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
+        // TODO implement loading screen
         if (state is HomeState) {
           return const MainStoreView();
         } else if (state is CategoriesState) {
           return CategoriesView();
         } else if (state is HelpSupportState) {
           return const Scaffold(
+            // TODO implement help & support view
             body: Text('Not yet implemented!!'),
           );
+        } else if (state is IsLoadingState) {
+          return const LoadingScreen();
         } else {
           return const Scaffold(
             body: CircularProgressIndicator(),
