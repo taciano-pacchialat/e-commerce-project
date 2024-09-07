@@ -1,8 +1,5 @@
-import 'package:e_commerce_project/constants/drawer_items.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:e_commerce_project/constants/app_colors.dart';
-import 'package:e_commerce_project/widgets/custom_drawer.dart';
 import 'package:e_commerce_project/widgets/custom_search_delegate.dart';
 import 'package:e_commerce_project/services/store/product.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
@@ -146,7 +143,7 @@ class MainStoreView extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return BaseScaffold(
-      title: 'Charly\'s Store',
+      title: 'Charly\'s Hideout',
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),

@@ -1,35 +1,33 @@
 import 'package:equatable/equatable.dart';
 
 abstract class NavigationState extends Equatable {
-  const NavigationState({
-    required this.isLoading,
-    this.loadingText = 'Please wait a moment',
-  });
-
-  final bool isLoading;
-  final String? loadingText;
+  const NavigationState();
 
   @override
-  List<Object> get props => [isLoading, loadingText ?? ''];
+  List<Object> get props => [];
+}
+
+class IsLoadingState extends NavigationState {
+  const IsLoadingState();
 }
 
 class HomeState extends NavigationState {
-  const HomeState({required super.isLoading});
+  const HomeState();
 }
 
 class CategoriesState extends NavigationState {
-  const CategoriesState({required super.isLoading});
+  const CategoriesState();
 }
 
 class HelpSupportState extends NavigationState {
-  const HelpSupportState({required super.isLoading});
+  const HelpSupportState();
 }
 
 class ProductDetailState extends NavigationState {
   final String productId;
 
-  const ProductDetailState(this.productId) : super(isLoading: false);
+  const ProductDetailState(this.productId);
 
   @override
-  List<Object> get props => [productId, isLoading];
+  List<Object> get props => [productId];
 }

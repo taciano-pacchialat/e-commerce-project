@@ -38,6 +38,7 @@ class _LoadingScreenState extends State<LoadingScreen>
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             AnimatedBuilder(
               animation: _animation,
@@ -50,7 +51,7 @@ class _LoadingScreenState extends State<LoadingScreen>
             ),
             const SizedBox(height: 24),
             const Text(
-              'Audio Gear Catalog',
+              'Charly\'s Hideout',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

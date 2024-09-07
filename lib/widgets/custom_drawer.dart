@@ -39,7 +39,7 @@ class CustomDrawer extends StatelessWidget {
                 bottom: 10.0,
               ),
               child: const Text(
-                'Charly\'s Store',
+                'Charly\'s Hideout',
                 style: TextStyle(
                   color: AppColors.primaryCream,
                   fontSize: 28.0,

@@ -7,6 +7,8 @@ abstract class NavigationEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class IsLoading extends NavigationEvent {}
+
 class NavigateToHome extends NavigationEvent {}
 
 class NavigateToCategories extends NavigationEvent {}
