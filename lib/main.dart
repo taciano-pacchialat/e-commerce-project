@@ -1,6 +1,5 @@
 import 'package:e_commerce_project/views/store/categories_view.dart';
 import 'package:e_commerce_project/views/store/help_support_view.dart';
-import 'package:e_commerce_project/views/store/product_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/helpers/loading_screen.dart';
 import 'package:e_commerce_project/services/bloc/navigation_events.dart';
@@ -39,8 +38,6 @@ class HomePage extends StatelessWidget {
           return HelpSupportView();
         } else if (state is IsLoadingState) {
           return const LoadingScreen();
-        } else if (state is ProductDetailState) {
-          return ProductDetailView(product: state.product);
         } else {
           return const Scaffold(
             body: CircularProgressIndicator(),

@@ -11,8 +11,5 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     on<NavigateToHelpSupport>((event, emit) => emit(const HelpSupportState()));
 
     on<IsLoading>((event, emit) => emit(const IsLoadingState()));
-
-    on<NavigateToProductDetail>(
-        (event, emit) => emit(ProductDetailState(event.product)));
   }
 }

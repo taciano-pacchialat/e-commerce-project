@@ -1,9 +1,6 @@
 import 'package:e_commerce_project/constants/app_colors.dart';
-import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
-import 'package:e_commerce_project/services/bloc/navigation_events.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/services/store/product.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductDetailView extends StatelessWidget {
   final Product product;
@@ -26,7 +23,7 @@ class ProductDetailView extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           color: AppColors.primaryCream,
           onPressed: () {
-            BlocProvider.of<NavigationBloc>(context).add(NavigateToHome());
+            Navigator.of(context).pop();
           },
         ),
         backgroundColor: AppColors.primaryBurgundy,

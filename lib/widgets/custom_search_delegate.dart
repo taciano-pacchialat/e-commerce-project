@@ -1,3 +1,4 @@
+import 'package:e_commerce_project/views/store/product_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/constants/app_colors.dart';
 import 'package:e_commerce_project/services/store/product.dart';
@@ -6,8 +7,6 @@ class CustomSearchDelegate extends SearchDelegate {
   final List<Product> data;
 
   CustomSearchDelegate(this.data);
-
-  //TODO change the font weight of the search prompt
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -79,10 +78,11 @@ class CustomSearchDelegate extends SearchDelegate {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Card(
-            color: const Color(
-                0xFFF5F5DC), // Background color similar to the image
+            color:
+                AppColors.primaryCream, // Background color similar to the image
             shape: RoundedRectangleBorder(
-              side: const BorderSide(color: Color(0xFFC9A32C)), // Border color
+              side: const BorderSide(
+                  color: AppColors.secondaryGold), // Border color
               borderRadius: BorderRadius.circular(8.0), // Rounded corners
             ),
             child: ListTile(
@@ -98,7 +98,7 @@ class CustomSearchDelegate extends SearchDelegate {
                 product.title,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF5C1A1B), // Text color
+                  color: AppColors.primaryBurgundy, // Text color
                 ),
               ),
               subtitle: Column(
@@ -109,12 +109,20 @@ class CustomSearchDelegate extends SearchDelegate {
                     '\$${product.unitPrice}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.green, // Price color
+                      color: AppColors.secondaryGreen, // Price color
                       fontSize: 16,
                     ),
                   ),
                 ],
               ),
+              onTap: () {
+                query = results[index].title;
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProductDetailView(product: product)));
+              },
             ),
           ),
         );
@@ -138,7 +146,7 @@ class CustomSearchDelegate extends SearchDelegate {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
             child: Card(
-              color: const Color(0xFFF5F5DC), // Background color
+              color: AppColors.primaryCream, // Background color
               shape: RoundedRectangleBorder(
                 side:
                     const BorderSide(color: Color(0xFFC9A32C)), // Border color
@@ -156,7 +164,7 @@ class CustomSearchDelegate extends SearchDelegate {
                   product.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF5C1A1B),
+                    color: AppColors.primaryBurgundy,
                   ),
                 ),
                 subtitle: Column(
@@ -164,12 +172,12 @@ class CustomSearchDelegate extends SearchDelegate {
                   children: [
                     Text(
                       product.category,
-                    ), // Displaying category (e.g., Guitars)
+                    ),
                     Text(
                       '\$${product.unitPrice}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: AppColors.secondaryGreen,
                         fontSize: 16,
                       ),
                     ),
@@ -177,7 +185,11 @@ class CustomSearchDelegate extends SearchDelegate {
                 ),
                 onTap: () {
                   query = suggestions[index].title;
-                  showResults(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ProductDetailView(product: product)));
                 },
               ),
             ),

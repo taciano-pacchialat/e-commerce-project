@@ -28,7 +28,7 @@ class CustomDrawer extends StatelessWidget {
       width: screenWidth * 0.7,
       child: ListView.separated(
         padding: EdgeInsets.zero,
-        itemCount: drawerItems.length + 2, // +1 for the header & box
+        itemCount: drawerItems.length + 2, // +2 for the header & box
         itemBuilder: (context, index) {
           if (index == 0) {
             return Container(
@@ -54,7 +54,6 @@ class CustomDrawer extends StatelessWidget {
             return DrawerListTile(
               title: title,
               onTap: () {
-                // TODO: handle navigation based on the title
                 if (title == 'Home') {
                   // Navigate to home screen
                   BlocProvider.of<NavigationBloc>(context)
