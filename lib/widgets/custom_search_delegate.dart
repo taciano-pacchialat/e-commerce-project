@@ -104,7 +104,7 @@ class CustomSearchDelegate extends SearchDelegate {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.category), // Displaying category (e.g., Guitars)
+                  Text(product.category),
                   Text(
                     '\$${product.unitPrice}',
                     style: const TextStyle(
@@ -136,8 +136,8 @@ class CustomSearchDelegate extends SearchDelegate {
         .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 20.0),
+    return Container(
+      color: AppColors.primaryCream,
       child: ListView.builder(
         itemCount: suggestions.length,
         itemBuilder: (context, index) {
@@ -146,10 +146,9 @@ class CustomSearchDelegate extends SearchDelegate {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
             child: Card(
-              color: AppColors.primaryCream, // Background color
+              color: AppColors.primaryCream,
               shape: RoundedRectangleBorder(
-                side:
-                    const BorderSide(color: Color(0xFFC9A32C)), // Border color
+                side: const BorderSide(color: AppColors.secondaryGold),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: ListTile(
