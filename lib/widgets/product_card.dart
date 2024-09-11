@@ -103,7 +103,10 @@ class ProductCard extends StatelessWidget {
                                 builder: (context) =>
                                     ProductDetailView(product: product)));
                       },
-                      child: const Text('View'),
+                      child: const Text(
+                        'View',
+                        style: TextStyle(color: AppColors.primaryCream),
+                      ),
                     ),
                   ],
                 ),
