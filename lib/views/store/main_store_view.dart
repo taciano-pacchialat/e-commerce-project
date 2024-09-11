@@ -213,7 +213,7 @@ class MainStoreView extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
-            childAspectRatio: screenHeight / screenWidth * 0.55,
+            childAspectRatio: screenHeight / screenWidth * 0.3,
           ),
           itemCount: mockProducts.length,
           itemBuilder: (context, index) {
