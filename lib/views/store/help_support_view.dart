@@ -54,24 +54,20 @@ class HelpSupportView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Frequently Asked Questions',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryBurgundy),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                       const SizedBox(height: 16),
                       ...faqs.map((faq) => ExpansionTile(
                             title: Text(faq['question']!,
-                                style: const TextStyle(
-                                    color: AppColors.primaryBurgundy)),
+                                style: Theme.of(context).textTheme.bodySmall),
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Text(faq['answer']!,
-                                    style: const TextStyle(
-                                        color: AppColors.primaryBurgundy)),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
                               ),
                             ],
                           )),
@@ -86,31 +82,28 @@ class HelpSupportView extends StatelessWidget {
                   side: const BorderSide(color: AppColors.secondaryGold),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Contact Us',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryBurgundy),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'If you have any questions or concerns that aren\'t addressed in our FAQ, please don\'t hesitate to reach out to us via email.',
-                        style: TextStyle(color: AppColors.primaryBurgundy),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Row(
                         children: [
-                          Icon(Icons.email, color: AppColors.secondaryGreen),
-                          SizedBox(width: 8),
+                          const Icon(Icons.email,
+                              color: AppColors.secondaryGreen),
+                          const SizedBox(width: 8),
                           Text('support@audiogear.com',
-                              style:
-                                  TextStyle(color: AppColors.secondaryGreen)),
+                              style: Theme.of(context).textTheme.labelSmall),
                         ],
                       ),
                     ],

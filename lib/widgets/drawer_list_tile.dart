@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:e_commerce_project/constants/app_colors.dart';
 
 class DrawerListTile extends StatelessWidget {
   final String title;
@@ -22,11 +21,7 @@ class DrawerListTile extends StatelessWidget {
         ),
         child: Text(
           title,
-          style: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w100,
-            color: AppColors.primaryBurgundy,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
       onTap: onTap,

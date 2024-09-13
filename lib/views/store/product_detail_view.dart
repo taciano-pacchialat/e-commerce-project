@@ -11,13 +11,9 @@ class ProductDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Charly\'s Hideout',
-          style: TextStyle(
-            color: AppColors.primaryCream,
-            fontSize: 25,
-            fontWeight: FontWeight.w400,
-          ),
+          style: Theme.of(context).textTheme.headlineLarge,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -57,16 +53,7 @@ class ProductDetailView extends StatelessWidget {
                 children: [
                   Text(
                     product.title,
-                    style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryBurgundy),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    product.category,
-                    style: const TextStyle(
-                        fontSize: 16, color: AppColors.accentBrown),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -74,34 +61,24 @@ class ProductDetailView extends StatelessWidget {
                     children: [
                       Text(
                         '\$${product.unitPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.secondaryGreen),
+                        style: Theme.of(context).textTheme.displayMedium,
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Description',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryBurgundy),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     product.description,
-                    style: const TextStyle(
-                        fontSize: 16, color: AppColors.accentBrown),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Specifications',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryBurgundy),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 8),
                   Column(
@@ -111,8 +88,7 @@ class ProductDetailView extends StatelessWidget {
                               padding: const EdgeInsets.only(bottom: 4),
                               child: Text(
                                 '• $spec',
-                                style: const TextStyle(
-                                    fontSize: 16, color: AppColors.accentBrown),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ))
                         .toList(),
@@ -146,14 +122,8 @@ class ProductDetailView extends StatelessWidget {
               const SnackBar(content: Text('Thank You!')),
             );
           },
-          child: const Text(
-            'Send a Whatsapp to Charly',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.primaryBurgundy,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          child: Text('Send a Whatsapp to Charly',
+              style: Theme.of(context).textTheme.headlineSmall),
         ),
       ),
     );

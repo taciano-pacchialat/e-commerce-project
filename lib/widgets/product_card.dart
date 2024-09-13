@@ -69,11 +69,7 @@ class ProductCard extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           product.title,
-                          style: const TextStyle(
-                            color: AppColors.primaryBurgundy,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
-                          ),
+                          style: Theme.of(context).textTheme.headlineMedium,
                           maxLines: 2,
                         ),
                       ),
@@ -92,18 +88,13 @@ class ProductCard extends StatelessWidget {
                         children: [
                           Text(
                             '\$${product.unitPrice}',
-                            style: const TextStyle(
-                              color: AppColors.primaryCream,
-                              fontWeight: FontWeight.w100,
-                              fontSize: 16.0,
-                            ),
+                            style: Theme.of(context).textTheme.displaySmall,
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.secondaryGold,
-                              textStyle: const TextStyle(
-                                color: AppColors.primaryBurgundy,
-                              ),
+                              textStyle:
+                                  Theme.of(context).textTheme.labelMedium,
                               shape: const LinearBorder(),
                             ),
                             onPressed: () {
@@ -113,9 +104,9 @@ class ProductCard extends StatelessWidget {
                                       builder: (context) =>
                                           ProductDetailView(product: product)));
                             },
-                            child: const Text(
+                            child: Text(
                               'View',
-                              style: TextStyle(color: AppColors.primaryCream),
+                              style: Theme.of(context).textTheme.titleSmall,
                             ),
                           ),
                         ],
