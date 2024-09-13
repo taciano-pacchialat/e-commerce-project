@@ -187,9 +187,6 @@ class MainStoreView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return BaseScaffold(
       title: 'Charly\'s Hideout',
       actions: [
@@ -208,17 +205,38 @@ class MainStoreView extends StatelessWidget {
       ],
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 8.0,
-            mainAxisSpacing: 8.0,
-            childAspectRatio: screenHeight / screenWidth * 0.3,
-          ),
-          itemCount: mockProducts.length,
-          itemBuilder: (context, index) {
-            return ProductCard(
-              product: mockProducts[index],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double screenWidth = constraints.maxWidth;
+            double screenHeight = constraints.maxHeight;
+
+            int crossAxisCount;
+            double childAspectRatio;
+
+            if (screenWidth > 650) {
+              crossAxisCount = 4;
+            } else if (screenWidth > 525) {
+              crossAxisCount = 3;
+            } else {
+              crossAxisCount = 2;
+            }
+
+            childAspectRatio =
+                (screenHeight / screenWidth * 0.3).clamp(0.5, 0.8);
+
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: childAspectRatio,
+              ),
+              itemCount: mockProducts.length,
+              itemBuilder: (context, index) {
+                return ProductCard(
+                  product: mockProducts[index],
+                );
+              },
             );
           },
         ),
