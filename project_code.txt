@@ -4602,3 +4602,1473 @@ void main() {
 
 
 
+===== lib/helpers/loading_screen_controller.dart =====
+import 'package:flutter/foundation.dart' show immutable;
+
+typedef CloseLoadingScreen = bool Function();
+typedef UpdateLoadingScreen = bool Function(String text);
+
+@immutable
+class LoadingScreenController {
+  final CloseLoadingScreen close;
+  final UpdateLoadingScreen update;
+
+  const LoadingScreenController({required this.close, required this.update});
+}
+
+
+
+===== lib/helpers/loading_screen.dart =====
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:e_commerce_project/constants/app_colors.dart';
+
+class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  _LoadingScreenState createState() => _LoadingScreenState();
+}
+
+class _LoadingScreenState extends State<LoadingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat();
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.primaryCream,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (_, child) {
+                return Transform.rotate(
+                  angle: _animation.value * 2 * pi,
+                  child: child,
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Charly\'s Hideout',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryBurgundy,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const SizedBox(
+              width: 200,
+              child: LinearProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AppColors.primaryBurgundy),
+                backgroundColor: AppColors.secondaryGold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Loading your gear...',
+              style: TextStyle(
+                color: AppColors.secondaryGold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/services/bloc/navigation_states.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationState extends Equatable {
+  const NavigationState();
+
+  @override
+  List<Object> get props => [];
+}
+
+class IsLoadingState extends NavigationState {
+  const IsLoadingState();
+}
+
+class HomeState extends NavigationState {
+  const HomeState();
+}
+
+class CategoriesState extends NavigationState {
+  const CategoriesState();
+}
+
+class HelpSupportState extends NavigationState {
+  const HelpSupportState();
+}
+
+
+
+===== lib/services/bloc/navigation_events.dart =====
+import 'package:equatable/equatable.dart';
+
+abstract class NavigationEvent extends Equatable {
+  const NavigationEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class IsLoading extends NavigationEvent {}
+
+class NavigateToHome extends NavigationEvent {}
+
+class NavigateToCategories extends NavigationEvent {}
+
+class NavigateToHelpSupport extends NavigationEvent {}
+
+
+
+===== lib/services/bloc/navigation_bloc.dart =====
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'navigation_events.dart';
+import 'navigation_states.dart';
+
+class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
+  NavigationBloc() : super(const HomeState()) {
+    on<NavigateToHome>((event, emit) => emit(const HomeState()));
+
+    on<NavigateToCategories>((event, emit) => emit(const CategoriesState()));
+
+    on<NavigateToHelpSupport>((event, emit) => emit(const HelpSupportState()));
+
+    on<IsLoading>((event, emit) => emit(const IsLoadingState()));
+  }
+}
+
+
+
+===== lib/services/store/product.dart =====
+class Product {
+  String id;
+  String title;
+  String description;
+  String category;
+  double unitPrice;
+  List<String> images;
+  String sku;
+  String slug;
+  int inventory;
+  DateTime lastUpdate;
+  String productCollection;
+  bool promotion;
+  List<String> features;
+
+  Product({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.unitPrice,
+    required this.images,
+    required this.sku,
+    required this.slug,
+    required this.inventory,
+    required this.lastUpdate,
+    required this.productCollection,
+    required this.promotion,
+    required this.features,
+  });
+}
+
+
+
+===== lib/services/store/category.dart =====
+import 'package:flutter/material.dart';
+
+class Category {
+  final String name;
+  final Icon icon;
+  final int items;
+
+  Category({required this.name, required this.icon, required this.items});
+}
+
+
+
+===== lib/utilities/no_paste_text_formatter.dart =====
+import 'package:flutter/services.dart';
+
+class NoPasteTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.length > oldValue.text.length + 1) {
+      return oldValue;
+    }
+    return newValue;
+  }
+}
+
+
+
+===== lib/main.dart =====
+import 'package:e_commerce_project/views/store/categories_view.dart';
+import 'package:e_commerce_project/views/store/help_support_view.dart';
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/helpers/loading_screen.dart';
+import 'package:e_commerce_project/services/bloc/navigation_events.dart';
+import 'package:e_commerce_project/services/bloc/navigation_states.dart';
+import 'package:e_commerce_project/views/store/main_store_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'services/bloc/navigation_bloc.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MaterialApp(
+      title: 'Charly\'s Hideout',
+      home: BlocProvider<NavigationBloc>(
+        create: (context) => NavigationBloc(),
+        child: const HomePage(),
+      ),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    context.read<NavigationBloc>().add(NavigateToHome());
+    return BlocBuilder<NavigationBloc, NavigationState>(
+      builder: (context, state) {
+        if (state is HomeState) {
+          return const MainStoreView();
+        } else if (state is CategoriesState) {
+          return CategoriesView();
+        } else if (state is HelpSupportState) {
+          return HelpSupportView();
+        } else if (state is IsLoadingState) {
+          return const LoadingScreen();
+        } else {
+          return const Scaffold(
+            body: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+}
+
+
+
+===== lib/constants/app_colors.dart =====
+import 'package:flutter/material.dart';
+
+class AppColors {
+  // primary colors
+  static const Color primaryBurgundy = Color.fromARGB(255, 92, 26, 27);
+  static const Color primaryCream = Color.fromARGB(255, 245, 245, 220);
+
+  // secondary colors
+  static const Color secondaryGold = Color.fromARGB(255, 201, 163, 44);
+  static const Color secondaryGreen = Color.fromARGB(255, 47, 79, 79);
+
+  // accent colors
+  static const Color accentBrown = Color.fromARGB(255, 139, 69, 19);
+  static const Color accentGray = Color.fromARGB(255, 112, 128, 144);
+}
+
+
+
+===== lib/constants/drawer_items.dart =====
+class DrawerItems {
+  static const List<String> items = ['Home', 'Categories', 'Help & Support'];
+}
+
+
+
+===== lib/widgets/drawer_list_tile.dart =====
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+
+class DrawerListTile extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const DrawerListTile({
+    super.key,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Padding(
+        padding: const EdgeInsets.only(
+          left: 28.0,
+          top: 8.0,
+          bottom: 8.0,
+        ),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w100,
+            color: AppColors.primaryBurgundy,
+          ),
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+}
+
+
+
+===== lib/widgets/product_card.dart =====
+import 'package:e_commerce_project/views/store/product_detail_view.dart';
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+
+  const ProductCard({
+    required this.product,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double maxWidth =
+            constraints.maxWidth > 400 ? 400 : constraints.maxWidth;
+        double maxHeight =
+            constraints.maxHeight > 600 ? 600 : constraints.maxHeight;
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxWidth,
+            ),
+            child: Card(
+              color: AppColors.primaryCream,
+              shape: const RoundedRectangleBorder(
+                side: BorderSide(
+                  color: AppColors.secondaryGold,
+                ),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.0),
+                ),
+              ),
+              elevation: 4.0,
+              child: SizedBox(
+                height: maxHeight,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 8.0,
+                          left: 8.0,
+                          right: 8.0,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            topRight: Radius.circular(8.0),
+                          ),
+                          child: Image.asset(
+                            product.images[0],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 8.0,
+                        bottom: 8.0,
+                        left: 12.0,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          product.title,
+                          style: const TextStyle(
+                            color: AppColors.primaryBurgundy,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                          ),
+                          maxLines: 2,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 1.32),
+                      decoration: const BoxDecoration(
+                        color: AppColors.secondaryGreen,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(8.0),
+                          bottomRight: Radius.circular(8.0),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '\$${product.unitPrice}',
+                            style: const TextStyle(
+                              color: AppColors.primaryCream,
+                              fontWeight: FontWeight.w100,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondaryGold,
+                              textStyle: const TextStyle(
+                                color: AppColors.primaryBurgundy,
+                              ),
+                              shape: const LinearBorder(),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProductDetailView(product: product)));
+                            },
+                            child: const Text(
+                              'View',
+                              style: TextStyle(color: AppColors.primaryCream),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+
+
+===== lib/widgets/base_scaffold.dart =====
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/constants/drawer_items.dart';
+import 'package:e_commerce_project/widgets/custom_drawer.dart';
+import 'package:flutter/material.dart';
+
+class BaseScaffold extends StatelessWidget {
+  final Widget body;
+  final String title;
+  final List<Widget>? actions;
+  final Widget? bottomNavigationBar;
+
+  const BaseScaffold(
+      {super.key,
+      required this.body,
+      required this.title,
+      this.actions,
+      this.bottomNavigationBar});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryBurgundy,
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: AppColors.primaryCream,
+            fontSize: 25,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        iconTheme: const IconThemeData(
+          color: AppColors.primaryCream,
+        ),
+        actions: actions,
+      ),
+      drawer: const CustomDrawer(drawerItems: DrawerItems.items),
+      backgroundColor: AppColors.primaryCream,
+      body: body,
+      bottomNavigationBar: bottomNavigationBar,
+    );
+  }
+}
+
+
+
+===== lib/widgets/custom_search_delegate.dart =====
+import 'package:e_commerce_project/views/store/product_detail_view.dart';
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+
+class CustomSearchDelegate extends SearchDelegate {
+  final List<Product> data;
+
+  CustomSearchDelegate(this.data);
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.primaryBurgundy,
+        elevation: 10.0,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.primaryCream),
+      inputDecorationTheme: const InputDecorationTheme(
+        hintStyle: TextStyle(color: Color.fromARGB(255, 131, 131, 131)),
+        border: InputBorder.none,
+      ),
+    );
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: IconButton(
+          icon: const Icon(Icons.clear),
+          color: AppColors.primaryCream,
+          onPressed: () {
+            if (query.isEmpty) {
+              close(context, null);
+            } else {
+              query = '';
+            }
+          },
+        ),
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const IconTheme(
+        data: IconThemeData(size: 22.0),
+        child: Icon(
+          Icons.arrow_back,
+          color: AppColors.primaryCream,
+        ),
+      ),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  TextStyle? get searchFieldStyle => const TextStyle(
+        color: AppColors.primaryCream,
+        fontSize: 18,
+        fontWeight: FontWeight.w100,
+      );
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final results = data
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final product = results[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Card(
+            color:
+                AppColors.primaryCream, // Background color similar to the image
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(
+                  color: AppColors.secondaryGold), // Border color
+              borderRadius: BorderRadius.circular(8.0), // Rounded corners
+            ),
+            child: ListTile(
+              leading: Image.network(
+                product.images[0],
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
+              ),
+              title: Text(
+                product.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryBurgundy, // Text color
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(product.category),
+                  Text(
+                    '\$${product.unitPrice}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondaryGreen, // Price color
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                query = results[index].title;
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProductDetailView(product: product)));
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestions = data
+        .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return Container(
+      color: AppColors.primaryCream,
+      child: ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final product = suggestions[index];
+          return Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+            child: Card(
+              color: AppColors.primaryCream,
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(color: AppColors.secondaryGold),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: ListTile(
+                leading: Image.network(
+                  product.images[0],
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+                title: Text(
+                  product.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryBurgundy,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.category,
+                    ),
+                    Text(
+                      '\$${product.unitPrice}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondaryGreen,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  query = suggestions[index].title;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ProductDetailView(product: product)));
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+
+===== lib/widgets/custom_drawer.dart =====
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
+import 'package:e_commerce_project/services/bloc/navigation_events.dart';
+import 'package:e_commerce_project/widgets/drawer_list_tile.dart';
+
+class CustomDrawer extends StatelessWidget {
+  final List<String> drawerItems;
+
+  const CustomDrawer({
+    super.key,
+    required this.drawerItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Drawer(
+      backgroundColor: AppColors.primaryCream,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.zero,
+          bottomRight: Radius.zero,
+        ),
+      ),
+      width: screenWidth * 0.7,
+      child: ListView.separated(
+        padding: EdgeInsets.zero,
+        itemCount: drawerItems.length + 2, // +2 for the header & box
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Container(
+              color: AppColors.primaryBurgundy,
+              padding: const EdgeInsets.only(
+                left: 18.0,
+                top: 8.0,
+                bottom: 10.0,
+              ),
+              child: const Text(
+                'Charly\'s Hideout',
+                style: TextStyle(
+                  color: AppColors.primaryCream,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            );
+          } else if (index == 1) {
+            return const SizedBox(height: 22.0);
+          } else {
+            final title = drawerItems[index - 2];
+            return DrawerListTile(
+              title: title,
+              onTap: () {
+                if (title == 'Home') {
+                  // Navigate to home screen
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHome());
+                } else if (title == 'Categories') {
+                  // Navigate to categories
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToCategories());
+                } else if (title == 'Help & Support') {
+                  // Navigate to help & support
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToHelpSupport());
+                }
+              },
+            );
+          }
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return [0, 1].contains(index)
+              ? const SizedBox.shrink()
+              : Divider(
+                  height: 1.0,
+                  indent: screenWidth * 0.08,
+                  endIndent: screenWidth * 0.08,
+                  color: AppColors.secondaryGold,
+                );
+        },
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/single_category_view.dart =====
+
+
+
+===== lib/views/store/product_detail_view.dart =====
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+
+class ProductDetailView extends StatelessWidget {
+  final Product product;
+
+  const ProductDetailView({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Charly\'s Hideout',
+          style: TextStyle(
+            color: AppColors.primaryCream,
+            fontSize: 25,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: AppColors.primaryCream,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        backgroundColor: AppColors.primaryBurgundy,
+        actions: const [],
+      ),
+      backgroundColor: AppColors.primaryCream,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 4 / 3,
+              child: Image.network(
+                product.images[0],
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: AppColors.secondaryGold,
+                    child: const Center(
+                      child: Icon(Icons.image_not_supported,
+                          size: 50, color: AppColors.primaryBurgundy),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.title,
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryBurgundy),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    product.category,
+                    style: const TextStyle(
+                        fontSize: 16, color: AppColors.accentBrown),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${product.unitPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.secondaryGreen),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Description',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryBurgundy),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    product.description,
+                    style: const TextStyle(
+                        fontSize: 16, color: AppColors.accentBrown),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Specifications',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryBurgundy),
+                  ),
+                  const SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: product.features
+                        .map<Widget>((spec) => Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                '• $spec',
+                                style: const TextStyle(
+                                    fontSize: 16, color: AppColors.accentBrown),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+            color: AppColors.primaryCream,
+            border: Border(
+                top: BorderSide(
+              color: AppColors.secondaryGold,
+              width: 1.0,
+            ))),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.secondaryGold,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: () {
+            // Implement add to cart functionality
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Thank You!')),
+            );
+          },
+          child: const Text(
+            'Send a Whatsapp to Charly',
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.primaryBurgundy,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/categories_view.dart =====
+import 'package:e_commerce_project/services/store/category.dart';
+import 'package:e_commerce_project/widgets/base_scaffold.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:e_commerce_project/constants/app_colors.dart';
+
+class CategoriesView extends StatelessWidget {
+  final List<Category> categories = [
+    Category(
+        name: "Guitars", icon: const Icon(FontAwesomeIcons.guitar), items: 120),
+    Category(
+        name: "Audio",
+        icon: const Icon(FontAwesomeIcons.headphones),
+        items: 45),
+    Category(
+        name: "Amplifiers",
+        icon: const Icon(FontAwesomeIcons.volumeHigh),
+        items: 80),
+    Category(
+        name: "Effects Pedals",
+        icon: const Icon(FontAwesomeIcons.sliders),
+        items: 200),
+    Category(
+        name: "Accessories",
+        icon: const Icon(FontAwesomeIcons.plane),
+        items: 150),
+  ];
+
+  CategoriesView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScaffold(
+      title: 'Categories',
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final category = categories[index];
+            return Card(
+              color: AppColors.primaryCream,
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(color: AppColors.secondaryGold),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor: AppColors.secondaryGreen,
+                  child: Icon(Icons.category, color: AppColors.primaryCream),
+                ),
+                title: Text(
+                  category.name,
+                  style: const TextStyle(
+                    color: AppColors.primaryBurgundy,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                subtitle: Text(
+                  '${category.items} items',
+                  style: const TextStyle(
+                    color: AppColors.primaryBurgundy,
+                    fontSize: 14,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.secondaryGold,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/help_support_view.dart =====
+import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/widgets/base_scaffold.dart';
+import 'package:flutter/material.dart';
+
+class HelpSupportView extends StatelessWidget {
+  final List<Map<String, String>> faqs = [
+    {
+      "question": "How do I place an order?",
+      "answer":
+          "To place an order, browse our catalog, select the items you want, add them to your cart, and proceed to checkout. Follow the prompts to enter your shipping and payment information."
+    },
+    {
+      "question": "What payment methods do you accept?",
+      "answer":
+          "We accept major credit cards (Visa, MasterCard, American Express), PayPal, and Apple Pay."
+    },
+    {
+      "question": "How long does shipping take?",
+      "answer":
+          "Shipping times vary depending on your location. Standard shipping typically takes 3-5 business days, while express shipping can take 1-2 business days."
+    },
+    {
+      "question": "Do you offer international shipping?",
+      "answer":
+          "Yes, we offer international shipping to most countries. Shipping costs and delivery times may vary depending on the destination."
+    },
+    {
+      "question": "What is your return policy?",
+      "answer":
+          "We offer a 30-day return policy for most items. Products must be in their original condition with all packaging and accessories. Please contact us to initiate a return."
+    }
+  ];
+
+  HelpSupportView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScaffold(
+      title: 'Help & Support',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                color: AppColors.primaryCream,
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(color: AppColors.secondaryGold),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Frequently Asked Questions',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryBurgundy),
+                      ),
+                      const SizedBox(height: 16),
+                      ...faqs.map((faq) => ExpansionTile(
+                            title: Text(faq['question']!,
+                                style: const TextStyle(
+                                    color: AppColors.primaryBurgundy)),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(faq['answer']!,
+                                    style: const TextStyle(
+                                        color: AppColors.primaryBurgundy)),
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                color: AppColors.primaryCream,
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(color: AppColors.secondaryGold),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Contact Us',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryBurgundy),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'If you have any questions or concerns that aren\'t addressed in our FAQ, please don\'t hesitate to reach out to us via email.',
+                        style: TextStyle(color: AppColors.primaryBurgundy),
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Icon(Icons.email, color: AppColors.secondaryGreen),
+                          SizedBox(width: 8),
+                          Text('support@audiogear.com',
+                              style:
+                                  TextStyle(color: AppColors.secondaryGreen)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+===== lib/views/store/main_store_view.dart =====
+import 'package:e_commerce_project/widgets/base_scaffold.dart';
+import 'package:flutter/material.dart';
+import 'package:e_commerce_project/widgets/custom_search_delegate.dart';
+import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/widgets/product_card.dart';
+
+final List<Product> mockProducts = [
+  Product(
+    id: '1',
+    title: 'Fender Stratocaster',
+    description: 'Classic electric guitar with a timeless sound.',
+    category: 'Guitar',
+    unitPrice: 1199.99,
+    images: [
+      'assets/images/fender-stratocaster/fender-stratocaster-1.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-2.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-3.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-4.jpg',
+      'assets/images/fender-stratocaster/fender-stratocaster-5.jpg',
+    ],
+    sku: 'FEND-STRAT',
+    slug: 'fender-stratocaster',
+    inventory: 15,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: true,
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+  ),
+  Product(
+    id: '2',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+    title: 'Gibson Les Paul',
+    description: 'Iconic electric guitar known for its rich tone.',
+    unitPrice: 2499.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/gibson-les-paul/gibson-les-paul-1.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-2.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-3.jpg',
+      'assets/images/gibson-les-paul/gibson-les-paul-4.jpg',
+    ],
+    sku: 'GIBS-LESPAUL',
+    slug: 'gibson-les-paul',
+    inventory: 10,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: false,
+  ),
+  Product(
+    id: '3',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+    title: 'Fender Telecaster',
+    description: 'Versatile electric guitar with a distinctive twang.',
+    unitPrice: 999.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/fender-telecaster/fender-telecaster-1.jpeg',
+    ],
+    sku: 'FEND-TELE',
+    slug: 'fender-telecaster',
+    inventory: 8,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: true,
+  ),
+  Product(
+    id: '4',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+    title: 'Gibson SG',
+    description: 'Classic electric guitar with a powerful sound.',
+    unitPrice: 1999.99,
+    category: 'Guitar',
+    images: [
+      'assets/images/gibson-sg/gibson-sg-1.jpeg',
+    ],
+    sku: 'GIBS-SG',
+    slug: 'gibson-sg',
+    inventory: 12,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Guitars',
+    promotion: false,
+  ),
+  Product(
+    id: '5',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+    title: 'Shure SM58 Microphone',
+    description: 'Legendary vocal microphone with excellent sound quality.',
+    unitPrice: 99.99,
+    category: 'Audio',
+    images: [
+      'assets/images/mic-shure/mic-shure-1.jpeg',
+    ],
+    sku: 'SHURE-SM58',
+    slug: 'shure-sm58',
+    inventory: 20,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Audio',
+    promotion: true,
+  ),
+  Product(
+    id: '6',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+    title: 'Universal Audio Apollo Twin X',
+    description: 'High-quality audio interface for professional recording.',
+    unitPrice: 1299.99,
+    category: 'Audio',
+    images: [
+      'assets/images/apollo-interface/apollo-interface-1.jpeg',
+    ],
+    sku: 'UA-APOLLO',
+    slug: 'universal-audio-apollo-twin-x',
+    inventory: 5,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Audio',
+    promotion: false,
+  ),
+  Product(
+    id: '7',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+    title: 'Marshall JVM410H Amplifier',
+    description: 'Versatile guitar amplifier with a wide range of tones.',
+    unitPrice: 1999.99,
+    category: 'Amplifier',
+    images: [
+      'assets/images/marshall-jvm410h/marshall-jvm410h-1.jpeg',
+    ],
+    sku: 'MARSH-JVM410H',
+    slug: 'marshall-jvm410h',
+    inventory: 7,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Amplifiers',
+    promotion: true,
+  ),
+  Product(
+    id: '8',
+    features: [
+      'Classic design',
+      'Versatile sound options',
+      'Comfortable to play',
+    ],
+    title: 'Orange Rockerverb 50 MKIII',
+    description: 'Powerful and versatile guitar amplifier head.',
+    unitPrice: 2499.99,
+    category: 'Amplifier',
+    images: [
+      'assets/images/orange-rockerverb50-mkii/orange-rockerverb50-mkii-1.jpeg',
+    ],
+    sku: 'ORANGE-RV50',
+    slug: 'orange-rockerverb50-mkii',
+    inventory: 3,
+    lastUpdate: DateTime.now(),
+    productCollection: 'Amplifiers',
+    promotion: false,
+  ),
+];
+
+class MainStoreView extends StatelessWidget {
+  const MainStoreView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScaffold(
+      title: 'Charly\'s Hideout',
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(mockProducts),
+              );
+            },
+          ),
+        ),
+      ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double screenWidth = constraints.maxWidth;
+            double screenHeight = constraints.maxHeight;
+
+            int crossAxisCount;
+            double childAspectRatio;
+
+            if (screenWidth > 650) {
+              crossAxisCount = 4;
+            } else if (screenWidth > 525) {
+              crossAxisCount = 3;
+            } else {
+              crossAxisCount = 2;
+            }
+
+            childAspectRatio =
+                (screenHeight / screenWidth * 0.3).clamp(0.5, 0.8);
+
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: childAspectRatio,
+              ),
+              itemCount: mockProducts.length,
+              itemBuilder: (context, index) {
+                return ProductCard(
+                  product: mockProducts[index],
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(const MaterialApp(
+    home: MainStoreView(),
+  ));
+}
+
+
+

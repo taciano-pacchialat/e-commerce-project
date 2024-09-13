@@ -1,32 +1,10 @@
-import 'package:e_commerce_project/services/store/category.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/mock/mock_categories.dart';
 
 class CategoriesView extends StatelessWidget {
-  final List<Category> categories = [
-    Category(
-        name: "Guitars", icon: const Icon(FontAwesomeIcons.guitar), items: 120),
-    Category(
-        name: "Audio",
-        icon: const Icon(FontAwesomeIcons.headphones),
-        items: 45),
-    Category(
-        name: "Amplifiers",
-        icon: const Icon(FontAwesomeIcons.volumeHigh),
-        items: 80),
-    Category(
-        name: "Effects Pedals",
-        icon: const Icon(FontAwesomeIcons.sliders),
-        items: 200),
-    Category(
-        name: "Accessories",
-        icon: const Icon(FontAwesomeIcons.plane),
-        items: 150),
-  ];
-
-  CategoriesView({super.key});
+  const CategoriesView({super.key});
 
   @override
   Widget build(BuildContext context) {

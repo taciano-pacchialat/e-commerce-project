@@ -80,7 +80,6 @@ class ProductCard extends StatelessWidget {
                     ),
                     Container(
                       padding: const EdgeInsets.all(8.0),
-                      margin: const EdgeInsets.symmetric(horizontal: 1.32),
                       decoration: const BoxDecoration(
                         color: AppColors.secondaryGreen,
                         borderRadius: BorderRadius.only(
