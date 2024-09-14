@@ -69,7 +69,7 @@ class ProductCard extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           product.title,
-                          style: Theme.of(context).textTheme.headlineMedium,
+                          style: Theme.of(context).textTheme.titleSmall,
                           maxLines: 2,
                         ),
                       ),
@@ -88,7 +88,13 @@ class ProductCard extends StatelessWidget {
                         children: [
                           Text(
                             '\$${product.unitPrice}',
-                            style: Theme.of(context).textTheme.displaySmall,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                  color: AppColors.primaryCream,
+                                  fontSize: 16.0,
+                                ),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -106,7 +112,7 @@ class ProductCard extends StatelessWidget {
                             },
                             child: Text(
                               'View',
-                              style: Theme.of(context).textTheme.titleSmall,
+                              style: Theme.of(context).textTheme.labelSmall,
                             ),
                           ),
                         ],

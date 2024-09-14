@@ -56,12 +56,23 @@ class HelpSupportView extends StatelessWidget {
                     children: [
                       Text(
                         'Frequently Asked Questions',
-                        style: Theme.of(context).textTheme.labelLarge,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontSize: 20.0),
                       ),
                       const SizedBox(height: 16),
                       ...faqs.map((faq) => ExpansionTile(
-                            title: Text(faq['question']!,
-                                style: Theme.of(context).textTheme.bodySmall),
+                            title: Text(
+                              faq['question']!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    fontSize: 18.0,
+                                    color: AppColors.primaryBurgundy,
+                                  ),
+                            ),
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(16),
@@ -89,7 +100,10 @@ class HelpSupportView extends StatelessWidget {
                     children: [
                       Text(
                         'Contact Us',
-                        style: Theme.of(context).textTheme.labelLarge,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontSize: 20.0),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -103,7 +117,7 @@ class HelpSupportView extends StatelessWidget {
                               color: AppColors.secondaryGreen),
                           const SizedBox(width: 8),
                           Text('support@audiogear.com',
-                              style: Theme.of(context).textTheme.labelSmall),
+                              style: Theme.of(context).textTheme.displaySmall),
                         ],
                       ),
                     ],

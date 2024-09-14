@@ -39,7 +39,7 @@ class CustomDrawer extends StatelessWidget {
                 bottom: 10.0,
               ),
               child: Text('Charly\'s Hideout',
-                  style: Theme.of(context).textTheme.headlineLarge),
+                  style: Theme.of(context).textTheme.titleLarge),
             );
           } else if (index == 1) {
             return const SizedBox(height: 22.0);

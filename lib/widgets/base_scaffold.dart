@@ -21,7 +21,7 @@ class BaseScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primaryBurgundy,
-        title: Text(title, style: Theme.of(context).textTheme.headlineLarge),
+        title: Text(title, style: Theme.of(context).textTheme.titleLarge),
         iconTheme: const IconThemeData(
           color: AppColors.primaryCream,
         ),

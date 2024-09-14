@@ -29,11 +29,14 @@ class CategoriesView extends StatelessWidget {
                 ),
                 title: Text(
                   category.name,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontSize: 18.0),
                 ),
                 subtitle: Text(
                   '${category.items} items',
-                  style: Theme.of(context).textTheme.labelMedium,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 trailing: const Icon(
                   Icons.chevron_right,

@@ -13,7 +13,7 @@ class ProductDetailView extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Charly\'s Hideout',
-          style: Theme.of(context).textTheme.headlineLarge,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -53,7 +53,7 @@ class ProductDetailView extends StatelessWidget {
                 children: [
                   Text(
                     product.title,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -61,24 +61,24 @@ class ProductDetailView extends StatelessWidget {
                     children: [
                       Text(
                         '\$${product.unitPrice.toStringAsFixed(2)}',
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Description',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     product.description,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Specifications',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
                   Column(
@@ -88,7 +88,7 @@ class ProductDetailView extends StatelessWidget {
                               padding: const EdgeInsets.only(bottom: 4),
                               child: Text(
                                 '• $spec',
-                                style: Theme.of(context).textTheme.bodyMedium,
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ))
                         .toList(),
