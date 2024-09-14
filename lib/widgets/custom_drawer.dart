@@ -52,6 +52,10 @@ class CustomDrawer extends StatelessWidget {
                   // Navigate to home screen
                   BlocProvider.of<NavigationBloc>(context)
                       .add(NavigateToHome());
+                } else if (title == 'Store') {
+                  // Navigate to store
+                  BlocProvider.of<NavigationBloc>(context)
+                      .add(NavigateToStore());
                 } else if (title == 'Categories') {
                   // Navigate to categories
                   BlocProvider.of<NavigationBloc>(context)

@@ -15,6 +15,10 @@ class HomeState extends NavigationState {
   const HomeState();
 }
 
+class StoreState extends NavigationState {
+  const StoreState();
+}
+
 class CategoriesState extends NavigationState {
   const CategoriesState();
 }

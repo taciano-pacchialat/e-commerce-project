@@ -93,7 +93,7 @@ class ProductCard extends StatelessWidget {
                                 .labelMedium
                                 ?.copyWith(
                                   color: AppColors.primaryCream,
-                                  fontSize: 16.0,
+                                  fontSize: 18.0,
                                 ),
                           ),
                           ElevatedButton(

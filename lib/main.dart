@@ -1,6 +1,7 @@
 import 'package:e_commerce_project/constants/text_themes/app_text_themes.dart';
 import 'package:e_commerce_project/views/store/categories_view.dart';
 import 'package:e_commerce_project/views/store/help_support_view.dart';
+import 'package:e_commerce_project/views/store/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/helpers/loading_screen.dart';
 import 'package:e_commerce_project/services/bloc/navigation_events.dart';
@@ -33,7 +34,9 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
         if (state is HomeState) {
-          return const MainStoreView();
+          return const HomePageView();
+        } else if (state is StoreState) {
+          return const StoreView();
         } else if (state is CategoriesState) {
           return const CategoriesView();
         } else if (state is HelpSupportState) {

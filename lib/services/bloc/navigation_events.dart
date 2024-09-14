@@ -11,6 +11,8 @@ class IsLoading extends NavigationEvent {}
 
 class NavigateToHome extends NavigationEvent {}
 
+class NavigateToStore extends NavigationEvent {}
+
 class NavigateToCategories extends NavigationEvent {}
 
 class NavigateToHelpSupport extends NavigationEvent {}

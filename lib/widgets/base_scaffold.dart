@@ -8,13 +8,16 @@ class BaseScaffold extends StatelessWidget {
   final String title;
   final List<Widget>? actions;
   final Widget? bottomNavigationBar;
+  final Widget? bottomSheet;
 
-  const BaseScaffold(
-      {super.key,
-      required this.body,
-      required this.title,
-      this.actions,
-      this.bottomNavigationBar});
+  const BaseScaffold({
+    super.key,
+    required this.body,
+    required this.title,
+    this.actions,
+    this.bottomNavigationBar,
+    this.bottomSheet,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +34,7 @@ class BaseScaffold extends StatelessWidget {
       backgroundColor: AppColors.primaryCream,
       body: body,
       bottomNavigationBar: bottomNavigationBar,
+      bottomSheet: bottomSheet,
     );
   }
 }

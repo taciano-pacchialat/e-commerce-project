@@ -4,8 +4,8 @@ import 'package:e_commerce_project/widgets/custom_search_delegate.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
 import 'package:e_commerce_project/mock/mock_products.dart';
 
-class MainStoreView extends StatelessWidget {
-  const MainStoreView({super.key});
+class StoreView extends StatelessWidget {
+  const StoreView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +69,6 @@ class MainStoreView extends StatelessWidget {
 
 void main() {
   runApp(const MaterialApp(
-    home: MainStoreView(),
+    home: StoreView(),
   ));
 }
