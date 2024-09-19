@@ -1,6 +1,6 @@
 import 'package:e_commerce_project/constants/text_themes/app_text_themes.dart';
-import 'package:e_commerce_project/views/store/categories_view.dart';
-import 'package:e_commerce_project/views/store/help_support_view.dart';
+import 'package:e_commerce_project/views/categories_view.dart';
+import 'package:e_commerce_project/views/help_support_view.dart';
 import 'package:e_commerce_project/views/home/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/helpers/loading_screen.dart';

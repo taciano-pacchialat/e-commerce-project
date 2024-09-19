@@ -3,7 +3,7 @@ import 'package:e_commerce_project/views/home/build_category_card.dart';
 import 'package:e_commerce_project/views/home/contact_info.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // For lucide-react-like icons
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePageView extends StatelessWidget {
   const HomePageView({super.key});
@@ -208,9 +208,9 @@ class HomePageView extends StatelessWidget {
                     buildCategoryCard(
                         FontAwesomeIcons.guitar, 'Guitars & Basses'),
                     buildCategoryCard(
-                        FontAwesomeIcons.microphone, 'Microphones'),
+                        FontAwesomeIcons.microphone, 'Effect Pedals'),
                     buildCategoryCard(
-                        FontAwesomeIcons.headphones, 'Studio Gear'),
+                        FontAwesomeIcons.headphones, 'Audio Gear'),
                   ],
                 ),
               ],
