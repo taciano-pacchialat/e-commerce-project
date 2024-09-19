@@ -207,8 +207,7 @@ class HomePageView extends StatelessWidget {
                   children: [
                     buildCategoryCard(
                         FontAwesomeIcons.guitar, 'Guitars & Basses'),
-                    buildCategoryCard(
-                        FontAwesomeIcons.microphone, 'Effect Pedals'),
+                    buildCategoryCard(FontAwesomeIcons.bolt, 'Effect Pedals'),
                     buildCategoryCard(
                         FontAwesomeIcons.headphones, 'Audio Gear'),
                   ],
@@ -301,7 +300,7 @@ class HomePageView extends StatelessWidget {
             child: const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                "© 2023 Audio Gear Haven. All rights reserved.",
+                "© 2023 Charly's Hideout. All rights reserved.",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.primaryCream),
               ),
