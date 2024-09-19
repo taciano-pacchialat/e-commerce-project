@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-
 class Category {
   final String name;
-  final Icon icon;
   final int items;
+  final List<Category> subCategories;
 
-  Category({required this.name, required this.icon, required this.items});
+  Category({
+    required this.name,
+    required this.items,
+    this.subCategories = const [],
+  });
 }

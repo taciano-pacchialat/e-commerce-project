@@ -1,22 +1,49 @@
 import 'package:e_commerce_project/services/store/category.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-final List<Category> categories = [
-  Category(
-      name: "Guitars", icon: const Icon(FontAwesomeIcons.guitar), items: 120),
-  Category(
-      name: "Audio", icon: const Icon(FontAwesomeIcons.headphones), items: 45),
-  Category(
+class MockCategories {
+  static final List<Category> categories = [
+    Category(
+      name: "Guitars",
+      items: 120,
+      subCategories: [
+        Category(name: "Electric Guitars", items: 60),
+        Category(name: "Acoustic Guitars", items: 40),
+        Category(name: "Bass Guitars", items: 20),
+      ],
+    ),
+    Category(
+      name: "Audio",
+      items: 45,
+      subCategories: [
+        Category(name: "Headphones", items: 25),
+        Category(name: "Speakers", items: 20),
+      ],
+    ),
+    Category(
       name: "Amplifiers",
-      icon: const Icon(FontAwesomeIcons.volumeHigh),
-      items: 80),
-  Category(
+      items: 80,
+      subCategories: [
+        Category(name: "Guitar Amps", items: 50),
+        Category(name: "Bass Amps", items: 30),
+      ],
+    ),
+    Category(
       name: "Effects Pedals",
-      icon: const Icon(FontAwesomeIcons.sliders),
-      items: 200),
-  Category(
+      items: 200,
+      subCategories: [
+        Category(name: "Distortion", items: 70),
+        Category(name: "Reverb", items: 50),
+        Category(name: "Delay", items: 80),
+      ],
+    ),
+    Category(
       name: "Accessories",
-      icon: const Icon(FontAwesomeIcons.plane),
-      items: 150),
-];
+      items: 150,
+      subCategories: [
+        Category(name: "Strings", items: 50),
+        Category(name: "Cables", items: 50),
+        Category(name: "Stands", items: 50),
+      ],
+    ),
+  ];
+}
