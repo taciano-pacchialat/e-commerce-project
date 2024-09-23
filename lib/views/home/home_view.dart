@@ -1,15 +1,34 @@
 import 'package:e_commerce_project/constants/app_colors.dart';
+import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
+import 'package:e_commerce_project/services/bloc/navigation_events.dart';
 import 'package:e_commerce_project/views/home/build_category_card.dart';
 import 'package:e_commerce_project/views/home/contact_info.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class HomePageView extends StatelessWidget {
+class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
 
   @override
+  _HomePageViewState createState() => _HomePageViewState();
+}
+
+class _HomePageViewState extends State<HomePageView> {
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollToServices() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent / 3,
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInOutCubicEmphasized,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    //TODO continue styling
     return BaseScaffold(
       title: 'Charly\'s Hideout',
       body: ListView(
@@ -19,40 +38,73 @@ class HomePageView extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                const Text(
+                Text(
                   "Your Audio Gear Specialist",
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryBurgundy),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppColors.primaryBurgundy,
+                        fontSize: 38.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   "Expert repairs and premium sales since 2016",
-                  style:
-                      TextStyle(fontSize: 18, color: AppColors.secondaryGreen),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 18.0,
+                      ),
                 ),
                 const SizedBox(height: 20),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondaryGold,
-                        textStyle: const TextStyle(
-                            color: AppColors.primaryBurgundy,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onPressed: () {},
-                      child: const Text("Our Services"),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              hintText: "Search for gear...",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: const BorderSide(
+                                  color: AppColors.secondaryGold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondaryGold,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            // Handle search action
+                          },
+                          child: const Icon(FontAwesomeIcons.magnifyingGlass,
+                              color: AppColors.primaryBurgundy),
+                        ),
+                      ],
                     ),
                     const SizedBox(width: 10),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: AppColors.secondaryGold),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                         backgroundColor: Colors.transparent,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        BlocProvider.of<NavigationBloc>(context)
+                            .add(NavigateToStore());
+                      },
                       child: const Text(
                         "Browse Catalog",
                         style: TextStyle(color: AppColors.primaryBurgundy),
