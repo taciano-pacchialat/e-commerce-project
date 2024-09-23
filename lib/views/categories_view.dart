@@ -3,11 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:e_commerce_project/constants/app_colors.dart';
 import 'package:e_commerce_project/mock/mock_categories.dart';
 
-class CategoriesView extends StatelessWidget {
+class CategoriesView extends StatefulWidget {
   const CategoriesView({super.key});
 
   @override
+  _CategoriesViewState createState() => _CategoriesViewState();
+}
+
+class _CategoriesViewState extends State<CategoriesView> {
+  // every category's state (if not expanded, state = false, else true)
+  final List<bool> _expandedStates =
+      List.filled(MockCategories.categories.length, false);
+
+  @override
   Widget build(BuildContext context) {
+    final categories = MockCategories.categories;
+
     return BaseScaffold(
       title: 'Categories',
       body: Padding(
@@ -22,11 +33,7 @@ class CategoriesView extends StatelessWidget {
                 side: const BorderSide(color: AppColors.secondaryGold),
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              child: ListTile(
-                leading: const CircleAvatar(
-                  backgroundColor: AppColors.secondaryGreen,
-                  child: Icon(Icons.category, color: AppColors.primaryCream),
-                ),
+              child: ExpansionTile(
                 title: Text(
                   category.name,
                   style: Theme.of(context)
@@ -38,10 +45,33 @@ class CategoriesView extends StatelessWidget {
                   '${category.items} items',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                trailing: const Icon(
-                  Icons.chevron_right,
+                trailing: Icon(
+                  _expandedStates[index]
+                      ? Icons.expand_less
+                      : Icons.expand_more,
                   color: AppColors.secondaryGold,
                 ),
+                onExpansionChanged: (expanded) {
+                  setState(() {
+                    _expandedStates[index] = expanded;
+                  });
+                },
+                children: category.subCategories.map(
+                  (subCategory) {
+                    return ListTile(
+                      title: Text(
+                        subCategory.name,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 16.0,
+                            ),
+                      ),
+                      subtitle: Text(
+                        '${subCategory.items} items',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    );
+                  },
+                ).toList(),
               ),
             );
           },
