@@ -37,6 +37,7 @@ dependencies:
   equatable: ^2.0.5
   carousel_slider: ^4.2.1
   font_awesome_flutter: ^10.7.0
+  logger: ^2.4.0
 
 dev_dependencies:
   flutter_test:

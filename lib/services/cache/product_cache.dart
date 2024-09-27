@@ -10,7 +10,10 @@ class ProductCache {
 
   void initializeCache(List<Product> products) {
     for (var product in products) {
-      _cache[product.category]?.add(product);
+      if (_cache[product.category] == null) {
+        _cache[product.category] = [];
+      }
+      _cache[product.category]!.add(product);
     }
   }
 
@@ -20,9 +23,5 @@ class ProductCache {
 
   List<Product>? getProducts(String categoryId) {
     return _cache[categoryId];
-  }
-
-  void setProducts(String categoryId, List<Product> products) {
-    _cache[categoryId] = products;
   }
 }
