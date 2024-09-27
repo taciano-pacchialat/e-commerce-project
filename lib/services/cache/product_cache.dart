@@ -8,6 +8,12 @@ class ProductCache {
   // categoryId, list of all the products in the category
   final Map<String, List<Product>> _cache = {};
 
+  void initializeCache(List<Product> products) {
+    for (var product in products) {
+      _cache[product.category]?.add(product);
+    }
+  }
+
   List<Product>? getAllProducts() {
     return _cache.values.expand((element) => element).toList();
   }

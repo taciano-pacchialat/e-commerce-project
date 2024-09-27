@@ -3,6 +3,7 @@ class Product {
   String title;
   String description;
   String category;
+  String subCategory;
   double unitPrice;
   List<String> images;
   String sku;
@@ -18,6 +19,7 @@ class Product {
     required this.title,
     required this.description,
     required this.category,
+    required this.subCategory,
     required this.unitPrice,
     required this.images,
     required this.sku,
