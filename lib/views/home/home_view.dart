@@ -8,23 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class HomePageView extends StatefulWidget {
+class HomePageView extends StatelessWidget {
   const HomePageView({super.key});
-
-  @override
-  _HomePageViewState createState() => _HomePageViewState();
-}
-
-class _HomePageViewState extends State<HomePageView> {
-  final ScrollController _scrollController = ScrollController();
-
-  void _scrollToServices() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent / 3,
-      duration: const Duration(seconds: 1),
-      curve: Curves.easeInOutCubicEmphasized,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +88,7 @@ class _HomePageViewState extends State<HomePageView> {
                       ),
                       onPressed: () {
                         BlocProvider.of<NavigationBloc>(context)
-                            .add(NavigateToStore());
+                            .add(const NavigateToStore(categoryId: ''));
                       },
                       child: const Text(
                         "Browse Catalog",

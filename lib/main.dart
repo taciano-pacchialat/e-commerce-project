@@ -12,22 +12,14 @@ import 'package:e_commerce_project/services/bloc/navigation_events.dart';
 import 'package:e_commerce_project/services/bloc/navigation_states.dart';
 import 'package:e_commerce_project/views/store/main_store_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 import 'services/bloc/navigation_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize caches
   CategoriesCache().initializeCache(mockCategories);
   ProductCache().initializeCache(mockProducts);
-
-  //! Debug
-  var logger = Logger();
-  logger.d(
-      'Products in ProductCache(): ${ProductCache().getAllProducts()!.length}');
-  logger.d(
-      'Categories in CategoriesCache(): ${CategoriesCache().getAllCategories().length}');
-  //! Finish debug
-
   runApp(
     MaterialApp(
       title: 'Charly\'s Hideout',

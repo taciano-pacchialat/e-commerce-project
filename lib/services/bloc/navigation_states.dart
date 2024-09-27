@@ -16,7 +16,11 @@ class HomeState extends NavigationState {
 }
 
 class StoreState extends NavigationState {
-  const StoreState();
+  final String categoryId;
+  const StoreState({required this.categoryId});
+
+  @override
+  List<Object> get props => [categoryId];
 }
 
 class CategoriesState extends NavigationState {

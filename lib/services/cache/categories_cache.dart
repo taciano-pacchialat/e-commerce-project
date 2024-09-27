@@ -17,6 +17,23 @@ class CategoriesCache {
     return _cache[id];
   }
 
+  String? getCategoryName(String id) {
+    return _cache[id]?.name;
+  }
+
+  String? getCategoryId(String name) {
+    String? id;
+    _cache.forEach(
+      (key, value) {
+        if (value.name == name) {
+          id = key;
+          return;
+        }
+      },
+    );
+    return id;
+  }
+
   void clearCache() {
     _cache.clear();
   }

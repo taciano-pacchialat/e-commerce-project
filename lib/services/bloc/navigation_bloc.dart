@@ -7,7 +7,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     on<NavigateToHome>((event, emit) => emit(const HomeState()));
 
     on<NavigateToStore>(
-      (event, emit) => emit(const StoreState()),
+      (event, emit) => emit(StoreState(categoryId: event.categoryId)),
     );
 
     on<NavigateToCategories>((event, emit) => emit(const CategoriesState()));

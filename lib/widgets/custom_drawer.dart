@@ -55,7 +55,7 @@ class CustomDrawer extends StatelessWidget {
                 } else if (title == 'Store') {
                   // Navigate to store
                   BlocProvider.of<NavigationBloc>(context)
-                      .add(NavigateToStore());
+                      .add(const NavigateToStore(categoryId: ''));
                 } else if (title == 'Categories') {
                   // Navigate to categories
                   BlocProvider.of<NavigationBloc>(context)

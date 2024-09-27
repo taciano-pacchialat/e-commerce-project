@@ -1,5 +1,5 @@
 import 'package:e_commerce_project/services/store/product.dart';
-import 'package:e_commerce_project/widgets/product_card.dart';
+import 'package:e_commerce_project/views/store/product_card.dart';
 import 'package:flutter/material.dart';
 
 // Displays the item grid, getting the items and the categoryId
