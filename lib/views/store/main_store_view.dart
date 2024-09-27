@@ -1,8 +1,8 @@
+import 'package:e_commerce_project/services/cache/product_cache.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/widgets/custom_search_delegate.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
-import 'package:e_commerce_project/mock/mock_products.dart';
 
 class StoreView extends StatelessWidget {
   const StoreView({super.key});
@@ -19,7 +19,8 @@ class StoreView extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: CustomSearchDelegate(mockProducts),
+                delegate:
+                    CustomSearchDelegate(ProductCache().getAllProducts()!),
               );
             },
           ),
@@ -53,10 +54,10 @@ class StoreView extends StatelessWidget {
                 mainAxisSpacing: 8.0,
                 childAspectRatio: childAspectRatio,
               ),
-              itemCount: mockProducts.length,
+              itemCount: ProductCache().getAllProducts()?.length,
               itemBuilder: (context, index) {
                 return ProductCard(
-                  product: mockProducts[index],
+                  product: ProductCache().getAllProducts()!.elementAt(index),
                 );
               },
             );

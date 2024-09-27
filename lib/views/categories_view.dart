@@ -1,7 +1,7 @@
+import 'package:e_commerce_project/services/cache/categories_cache.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/constants/app_colors.dart';
-import 'package:e_commerce_project/mock/mock_categories.dart';
 
 class CategoriesView extends StatefulWidget {
   const CategoriesView({super.key});
@@ -13,11 +13,11 @@ class CategoriesView extends StatefulWidget {
 class _CategoriesViewState extends State<CategoriesView> {
   // every category's state (if not expanded, state = false, else true)
   final List<bool> _expandedStates =
-      List.filled(MockCategories.categories.length, false);
+      List.filled(CategoriesCache().getAllCategories().length, false);
 
   @override
   Widget build(BuildContext context) {
-    final categories = MockCategories.categories;
+    final categories = CategoriesCache().getAllCategories();
 
     return BaseScaffold(
       title: 'Categories',

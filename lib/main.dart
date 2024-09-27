@@ -1,4 +1,8 @@
 import 'package:e_commerce_project/constants/text_themes/app_text_themes.dart';
+import 'package:e_commerce_project/mock/mock_categories.dart';
+import 'package:e_commerce_project/mock/mock_products.dart';
+import 'package:e_commerce_project/services/cache/categories_cache.dart';
+import 'package:e_commerce_project/services/cache/product_cache.dart';
 import 'package:e_commerce_project/views/categories_view.dart';
 import 'package:e_commerce_project/views/help_support_view.dart';
 import 'package:e_commerce_project/views/home/home_view.dart';
@@ -12,6 +16,8 @@ import 'services/bloc/navigation_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  CategoriesCache().initializeCache(mockCategories);
+  ProductCache().initializeCache(mockProducts);
   runApp(
     MaterialApp(
       title: 'Charly\'s Hideout',
