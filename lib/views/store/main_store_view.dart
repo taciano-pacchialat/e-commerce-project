@@ -1,15 +1,13 @@
 import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
-import 'package:e_commerce_project/services/bloc/navigation_events.dart';
 import 'package:e_commerce_project/services/bloc/navigation_states.dart';
-import 'package:e_commerce_project/services/cache/categories_cache.dart';
 import 'package:e_commerce_project/services/cache/product_cache.dart';
 import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/views/store/filter_section.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:e_commerce_project/views/store/item_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/views/store/custom_search_delegate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 
 class StoreView extends StatelessWidget {
   const StoreView({super.key});
@@ -18,96 +16,84 @@ class StoreView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
-        List<Product>? products;
-        String? categoryName = '';
+        String selectedCategoryId = '';
+        List<Product> products = [];
+
         if (state is StoreState) {
-          categoryName = CategoriesCache().getCategoryName(state.categoryId);
-          products = state.categoryId == ''
-              ? ProductCache().getAllProducts()!
-              : ProductCache().getProducts(state.categoryId);
+          selectedCategoryId = state.categoryId;
+          products = selectedCategoryId.isEmpty
+              ? ProductCache().getAllProducts() ?? []
+              : ProductCache().getProducts(selectedCategoryId) ?? [];
         }
 
-        // Handle null or empty products case
-        if (products == null || products.isEmpty) {
-          return const BaseScaffold(
-            title: 'Charly\'s Hideout',
-            body: Center(
-              child:
-                  Text('No products available', style: TextStyle(fontSize: 18)),
+        return BaseScaffold(
+          title: 'Charly\'s Hideout',
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  showSearch(
+                    context: context,
+                    delegate: CustomSearchDelegate(products),
+                  );
+                },
+              ),
             ),
-          );
-        } else {
-          var logger = Logger();
-          logger.i('Products: $products');
-          return BaseScaffold(
-            title: 'Charly\'s Hideout',
-            actions: [
+          ],
+          body: Column(
+            children: [
+              // Filter section
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    showSearch(
-                      context: context,
-                      delegate: CustomSearchDelegate(products!),
-                    );
-                  },
+                child: FilterSection(
+                  selectedCategoryId: selectedCategoryId,
                 ),
               ),
-            ],
-            body: Column(
-              children: [
-                // Filter section
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (products.isNotEmpty)
-                        Expanded(
-                          child: Chip(
-                            label: Text('Filter: $categoryName'),
-                            onDeleted: () {
-                              BlocProvider.of<NavigationBloc>(context).add(
-                                const NavigateToStore(categoryId: ''),
-                              );
-                            },
-                            deleteIcon: const Icon(Icons.clear),
-                            backgroundColor: Colors.grey[200],
-                          ),
-                        ),
-                      DropdownButton<String>(
-                        value: categoryName,
-                        hint: const Text('Select Category'),
-                        items: CategoriesCache()
-                            .getAllCategories()
-                            .map((category) => category.name)
-                            .toList()
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          String? newId =
-                              CategoriesCache().getCategoryId(newValue!);
-                          BlocProvider.of<NavigationBloc>(context)
-                              .add(NavigateToStore(categoryId: newId!));
-                        },
+              products.isNotEmpty
+                  ? Expanded(
+                      child: ItemGrid(
+                        items: products,
                       ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ItemGrid(
-                    items: products,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
+                    )
+                  : Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.sentiment_dissatisfied),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'No Products Available',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: Colors.grey[700],
+                                    fontSize: 18.0,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Please select another category',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Colors.grey[600],
+                                    fontSize: 14.0,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+            ],
+          ),
+        );
       },
     );
   }
