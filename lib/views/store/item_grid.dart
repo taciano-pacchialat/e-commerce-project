@@ -36,7 +36,7 @@ class ItemGrid extends StatelessWidget {
             crossAxisCount = 2;
           }
 
-          childAspectRatio = (screenHeight / screenWidth * 0.3).clamp(0.5, 0.8);
+          childAspectRatio = 0.55;
 
           return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -45,6 +45,8 @@ class ItemGrid extends StatelessWidget {
               mainAxisSpacing: 8.0,
               childAspectRatio: childAspectRatio,
             ),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: items.length,
             itemBuilder: (context, index) {
               return ProductCard(

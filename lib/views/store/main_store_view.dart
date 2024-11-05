@@ -29,20 +29,17 @@ class StoreView extends StatelessWidget {
         return BaseScaffold(
           title: 'Charly\'s Hideout',
           actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {
-                  showSearch(
-                    context: context,
-                    delegate: CustomSearchDelegate(products),
-                  );
-                },
-              ),
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(products),
+                );
+              },
             ),
           ],
-          body: Column(
+          body: ListView(
             children: [
               // Filter section
               Padding(
@@ -51,14 +48,14 @@ class StoreView extends StatelessWidget {
                   selectedCategoryId: selectedCategoryId,
                 ),
               ),
+              // Product grid or no products message
               products.isNotEmpty
-                  ? Expanded(
-                      child: ItemGrid(
-                        items: products,
-                      ),
+                  ? ItemGrid(
+                      items: products,
                     )
-                  : Expanded(
-                      child: Center(
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
