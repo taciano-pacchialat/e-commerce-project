@@ -23,7 +23,6 @@ class ItemGrid extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           double screenWidth = constraints.maxWidth;
-          double screenHeight = constraints.maxHeight;
 
           int crossAxisCount;
           double childAspectRatio;
