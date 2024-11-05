@@ -13,12 +13,11 @@ class HomePageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //TODO continue styling
     return BaseScaffold(
       title: 'Charly\'s Hideout',
       body: ListView(
         children: [
-          // Welcome section
+          // Title section
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -40,66 +39,42 @@ class HomePageView extends StatelessWidget {
                         fontSize: 18.0,
                       ),
                 ),
-                const SizedBox(height: 20),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              hintText: "Search for gear...",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: const BorderSide(
-                                  color: AppColors.secondaryGold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.secondaryGold,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                          onPressed: () {
-                            // Handle search action
-                          },
-                          child: const Icon(FontAwesomeIcons.magnifyingGlass,
-                              color: AppColors.primaryBurgundy),
-                        ),
-                      ],
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.secondaryGold,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 16.0), // Adjust padding
+                    minimumSize: const Size(200, 60),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    const SizedBox(width: 10),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColors.secondaryGold),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  onPressed: () {
+                    BlocProvider.of<NavigationBloc>(context).add(
+                      const NavigateToStore(categoryId: ''),
+                    );
+                  },
+                  child: Text(
+                    'Explore our catalog',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w900,
                         ),
-                        backgroundColor: Colors.transparent,
-                      ),
-                      onPressed: () {
-                        BlocProvider.of<NavigationBloc>(context)
-                            .add(const NavigateToStore(categoryId: ''));
-                      },
-                      child: const Text(
-                        "Browse Catalog",
-                        style: TextStyle(color: AppColors.primaryBurgundy),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
+
           const SizedBox(height: 20),
 
           // Tabs Section
@@ -268,7 +243,7 @@ class HomePageView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "About Audio Gear Haven",
+                      "About Charly's Hideout",
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -317,7 +292,7 @@ class HomePageView extends StatelessWidget {
                     child: Column(
                       children: [
                         ContactInfo(
-                            icon: FontAwesomeIcons.phone,
+                            icon: FontAwesomeIcons.whatsapp,
                             text: "+54 221 542 4184"),
                         ContactInfo(
                             icon: FontAwesomeIcons.locationDot,
@@ -337,7 +312,7 @@ class HomePageView extends StatelessWidget {
             child: const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                "© 2023 Charly's Hideout. All rights reserved.",
+                "© 2024 Charly's Hideout. All rights reserved.",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.primaryCream),
               ),
