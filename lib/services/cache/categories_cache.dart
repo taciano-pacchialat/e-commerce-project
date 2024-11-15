@@ -1,4 +1,5 @@
 import 'package:e_commerce_project/services/cloud/category.dart';
+import 'package:e_commerce_project/services/cloud/cloud_service.dart';
 
 class CategoriesCache {
   static final CategoriesCache _instance = CategoriesCache._internal();
@@ -7,7 +8,7 @@ class CategoriesCache {
 
   final Map<String, Category> _cache = {};
 
-  void initializeCache(List<Category> categories) {
+  void updateCache(List<Category> categories) {
     for (var category in categories) {
       _cache[category.id] = category;
     }
@@ -44,5 +45,14 @@ class CategoriesCache {
 
   List<Category> getAllCategories() {
     return _cache.values.toList();
+  }
+
+  Future<void> fetchAndCacheCategories() async {
+    try {
+      List<Category> categories = await CloudService().fetchCategories();
+      updateCache(categories);
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }

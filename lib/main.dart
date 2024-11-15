@@ -16,9 +16,10 @@ import 'services/bloc/navigation_bloc.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize caches
-  CategoriesCache().initializeCache(mockCategories);
+  // Initialize caches with mock data
+  CategoriesCache().updateCache(mockCategories);
   ProductCache().initializeCache(mockProducts);
+
   runApp(
     MaterialApp(
       title: 'Charly\'s Hideout',
