@@ -1,4 +1,5 @@
-import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/services/cloud/cloud_service.dart';
+import 'package:e_commerce_project/services/cloud/product.dart';
 
 class ProductCache {
   static final ProductCache _instance = ProductCache._internal();
@@ -21,7 +22,19 @@ class ProductCache {
     return _cache.values.expand((element) => element).toList();
   }
 
-  List<Product>? getProducts(String categoryId) {
-    return _cache[categoryId];
+  void updateCategoryCache(String categoryId, List<Product> products) {
+    _cache[categoryId] = products;
+  }
+
+  Future<List<Product>> getProducts(String categoryId) async {
+    if (_cache.containsKey(categoryId)) {
+      return _cache[categoryId]!;
+    } else {
+      // Fetch products from CloudService if not in cache
+      List<Product> products =
+          await CloudService().fetchProductsByCategory(categoryId);
+      updateCategoryCache(categoryId, products);
+      return products;
+    }
   }
 }

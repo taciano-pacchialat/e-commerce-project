@@ -1,4 +1,4 @@
-import 'package:e_commerce_project/services/store/category.dart';
+import 'package:e_commerce_project/services/cloud/category.dart';
 
 class CategoriesCache {
   static final CategoriesCache _instance = CategoriesCache._internal();

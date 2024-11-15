@@ -1,4 +1,4 @@
-import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/services/cloud/product.dart';
 
 final List<Product> mockProducts = [
   Product(
@@ -6,7 +6,6 @@ final List<Product> mockProducts = [
     title: 'Fender Stratocaster',
     description: 'Classic electric guitar with a timeless sound.',
     category: '1',
-    subCategory: '2',
     unitPrice: 1199.99,
     images: [
       'assets/images/fender-stratocaster/fender-stratocaster-1.jpg',
@@ -19,26 +18,13 @@ final List<Product> mockProducts = [
     slug: 'fender-stratocaster',
     inventory: 15,
     lastUpdate: DateTime.now(),
-    productCollection: 'Guitars',
-    promotion: true,
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
   ),
   Product(
     id: '2',
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
     title: 'Gibson Les Paul',
     description: 'Iconic electric guitar known for its rich tone.',
     unitPrice: 2499.99,
     category: 'Guitar',
-    subCategory: '2',
     images: [
       'assets/images/gibson-les-paul/gibson-les-paul-1.jpg',
       'assets/images/gibson-les-paul/gibson-les-paul-2.jpg',
@@ -49,21 +35,13 @@ final List<Product> mockProducts = [
     slug: 'gibson-les-paul',
     inventory: 10,
     lastUpdate: DateTime.now(),
-    productCollection: 'Guitars',
-    promotion: false,
   ),
   Product(
     id: '3',
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
     title: 'Fender Telecaster',
     description: 'Versatile electric guitar with a distinctive twang.',
     unitPrice: 999.99,
     category: '1',
-    subCategory: '2',
     images: [
       'assets/images/fender-telecaster/fender-telecaster-1.jpeg',
     ],
@@ -71,21 +49,13 @@ final List<Product> mockProducts = [
     slug: 'fender-telecaster',
     inventory: 8,
     lastUpdate: DateTime.now(),
-    productCollection: 'Guitars',
-    promotion: true,
   ),
   Product(
     id: '4',
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
     title: 'Gibson SG',
     description: 'Classic electric guitar with a powerful sound.',
     unitPrice: 1999.99,
     category: '1',
-    subCategory: '2',
     images: [
       'assets/images/gibson-sg/gibson-sg-1.jpeg',
     ],
@@ -93,21 +63,13 @@ final List<Product> mockProducts = [
     slug: 'gibson-sg',
     inventory: 12,
     lastUpdate: DateTime.now(),
-    productCollection: 'Guitars',
-    promotion: false,
   ),
   Product(
     id: '5',
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
     title: 'Shure SM58 Microphone',
     description: 'Legendary vocal microphone with excellent sound quality.',
     unitPrice: 99.99,
     category: '5',
-    subCategory: '7',
     images: [
       'assets/images/mic-shure/mic-shure-1.jpeg',
     ],
@@ -115,21 +77,13 @@ final List<Product> mockProducts = [
     slug: 'shure-sm58',
     inventory: 20,
     lastUpdate: DateTime.now(),
-    productCollection: 'Audio',
-    promotion: true,
   ),
   Product(
     id: '6',
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
     title: 'Universal Audio Apollo Twin X',
     description: 'High-quality audio interface for professional recording.',
     unitPrice: 1299.99,
     category: '5',
-    subCategory: '6',
     images: [
       'assets/images/apollo-interface/apollo-interface-1.jpeg',
     ],
@@ -137,21 +91,13 @@ final List<Product> mockProducts = [
     slug: 'universal-audio-apollo-twin-x',
     inventory: 5,
     lastUpdate: DateTime.now(),
-    productCollection: 'Audio',
-    promotion: false,
   ),
   Product(
     id: '7',
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
     title: 'Marshall JVM410H Amplifier',
     description: 'Versatile guitar amplifier with a wide range of tones.',
     unitPrice: 1999.99,
     category: '8',
-    subCategory: '9',
     images: [
       'assets/images/marshall-jvm410h/marshall-jvm410h-1.jpeg',
     ],
@@ -159,21 +105,13 @@ final List<Product> mockProducts = [
     slug: 'marshall-jvm410h',
     inventory: 7,
     lastUpdate: DateTime.now(),
-    productCollection: 'Amplifiers',
-    promotion: true,
   ),
   Product(
     id: '8',
-    features: [
-      'Classic design',
-      'Versatile sound options',
-      'Comfortable to play',
-    ],
     title: 'Orange Rockerverb 50 MKIII',
     description: 'Powerful and versatile guitar amplifier head.',
     unitPrice: 2499.99,
     category: '8',
-    subCategory: '9',
     images: [
       'assets/images/orange-rockerverb50-mkii/orange-rockerverb50-mkii-1.jpeg',
     ],
@@ -181,7 +119,5 @@ final List<Product> mockProducts = [
     slug: 'orange-rockerverb50-mkii',
     inventory: 3,
     lastUpdate: DateTime.now(),
-    productCollection: 'Amplifiers',
-    promotion: false,
   ),
 ];

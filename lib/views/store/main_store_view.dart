@@ -1,7 +1,7 @@
 import 'package:e_commerce_project/services/bloc/navigation_bloc.dart';
 import 'package:e_commerce_project/services/bloc/navigation_states.dart';
 import 'package:e_commerce_project/services/cache/product_cache.dart';
-import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/services/cloud/product.dart';
 import 'package:e_commerce_project/views/store/filter_section.dart';
 import 'package:e_commerce_project/widgets/base_scaffold.dart';
 import 'package:e_commerce_project/views/store/item_grid.dart';
@@ -23,7 +23,9 @@ class StoreView extends StatelessWidget {
           selectedCategoryId = state.categoryId;
           products = selectedCategoryId.isEmpty
               ? ProductCache().getAllProducts() ?? []
-              : ProductCache().getProducts(selectedCategoryId) ?? [];
+              : (ProductCache().getProducts(selectedCategoryId)
+                      as List<Product>?) ??
+                  [];
         }
 
         return BaseScaffold(

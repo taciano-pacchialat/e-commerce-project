@@ -1,7 +1,7 @@
 import 'package:e_commerce_project/views/store/product_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_project/constants/app_colors.dart';
-import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/services/cloud/product.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   final List<Product> data;

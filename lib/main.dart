@@ -3,7 +3,6 @@ import 'package:e_commerce_project/mock/mock_categories.dart';
 import 'package:e_commerce_project/mock/mock_products.dart';
 import 'package:e_commerce_project/services/cache/categories_cache.dart';
 import 'package:e_commerce_project/services/cache/product_cache.dart';
-import 'package:e_commerce_project/views/categories_view.dart';
 import 'package:e_commerce_project/views/help_support_view.dart';
 import 'package:e_commerce_project/views/home/home_view.dart';
 import 'package:flutter/material.dart';
@@ -45,8 +44,6 @@ class HomePage extends StatelessWidget {
           return const HomePageView();
         } else if (state is StoreState) {
           return const StoreView();
-        } else if (state is CategoriesState) {
-          return const CategoriesView();
         } else if (state is HelpSupportState) {
           return HelpSupportView();
         } else if (state is IsLoadingState) {

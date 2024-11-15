@@ -23,10 +23,6 @@ class StoreState extends NavigationState {
   List<Object> get props => [categoryId];
 }
 
-class CategoriesState extends NavigationState {
-  const CategoriesState();
-}
-
 class HelpSupportState extends NavigationState {
   const HelpSupportState();
 }

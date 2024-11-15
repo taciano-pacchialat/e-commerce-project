@@ -20,6 +20,4 @@ class NavigateToStore extends NavigationEvent {
   List<Object> get props => [categoryId];
 }
 
-class NavigateToCategories extends NavigationEvent {}
-
 class NavigateToHelpSupport extends NavigationEvent {}

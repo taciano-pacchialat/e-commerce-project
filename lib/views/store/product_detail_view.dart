@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_commerce_project/constants/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:e_commerce_project/services/store/product.dart';
+import 'package:e_commerce_project/services/cloud/product.dart';
 
 class ProductDetailView extends StatefulWidget {
   final Product product;
@@ -183,18 +183,6 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: product.features.map((spec) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          '• $spec',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      );
-                    }).toList(),
-                  ),
                 ],
               ),
             ),

@@ -1,4 +1,4 @@
-import 'package:e_commerce_project/services/store/category.dart';
+import 'package:e_commerce_project/services/cloud/category.dart';
 
 final List<Category> mockCategories = [
   Category(
