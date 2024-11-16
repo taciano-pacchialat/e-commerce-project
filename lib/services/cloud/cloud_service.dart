@@ -5,9 +5,11 @@ import 'package:e_commerce_project/services/cloud/product.dart';
 import 'package:http/http.dart' as http;
 
 class CloudService {
+  final String _baseUrl = 'http://127.0.0.1:8000/api';
+
   Future<List<Product>> fetchProducts() async {
     try {
-      final response = await http.get(Uri.parse('products_endpoint_url'));
+      final response = await http.get(Uri.parse('$_baseUrl/products/'));
 
       if (response.statusCode == 200) {
         try {
@@ -33,7 +35,7 @@ class CloudService {
   Future<List<Product>> fetchProductsByCategory(String categoryId) async {
     try {
       final response = await http.get(
-        Uri.parse('products_endpoint_url?category=$categoryId'),
+        Uri.parse('$_baseUrl/products?category=$categoryId'),
       );
 
       if (response.statusCode == 200) {
@@ -60,7 +62,7 @@ class CloudService {
   Future<List<Category>> fetchCategories() async {
     try {
       final response = await http.get(
-        Uri.parse('categories_endpoint_url'),
+        Uri.parse('$_baseUrl/categories/'),
       );
 
       if (response.statusCode == 200) {

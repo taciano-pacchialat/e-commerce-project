@@ -26,6 +26,15 @@ class ProductCache {
     _cache[categoryId] = products;
   }
 
+  Future<void> fetchAndCacheProducts() async {
+    try {
+      List<Product> products = await getProducts('');
+      initializeCache(products);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   Future<List<Product>> getProducts(String categoryId) async {
     if (_cache.containsKey(categoryId)) {
       return _cache[categoryId]!;

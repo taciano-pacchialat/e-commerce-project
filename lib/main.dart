@@ -1,6 +1,4 @@
 import 'package:e_commerce_project/constants/text_themes/app_text_themes.dart';
-import 'package:e_commerce_project/mock/mock_categories.dart';
-import 'package:e_commerce_project/mock/mock_products.dart';
 import 'package:e_commerce_project/services/cache/categories_cache.dart';
 import 'package:e_commerce_project/services/cache/product_cache.dart';
 import 'package:e_commerce_project/views/help_support_view.dart';
@@ -17,8 +15,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize caches with mock data
-  CategoriesCache().updateCache(mockCategories);
-  ProductCache().initializeCache(mockProducts);
+  CategoriesCache().fetchAndCacheCategories();
+  ProductCache().fetchAndCacheProducts();
 
   runApp(
     MaterialApp(
